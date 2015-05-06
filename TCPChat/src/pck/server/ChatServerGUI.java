@@ -45,8 +45,7 @@ public class ChatServerGUI implements Receiver {
 		}
 
 		else if (e instanceof ReNameEvent) {
-			final ReNameEvent rnE = (ReNameEvent) e;
-			// TODO implement
+			broadcast(e);
 			
 		}  else {
 			throw new IllegalArgumentException();

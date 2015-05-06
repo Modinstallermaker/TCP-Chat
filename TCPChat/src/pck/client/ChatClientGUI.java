@@ -17,7 +17,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -59,6 +61,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	private final HTMLDocument doc = new HTMLDocument();
 	private String Outputtext = "<td colspan=3><b>Herzlich Willommen im Chat!</b><br></td>";
 	boolean scrollDown = false;
+	private final List<ReNameEvent> clientNames = new ArrayList<>();
 
 	public ChatClientGUI() {
 		super("Nicht verbunden");
@@ -153,44 +156,44 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
 				"HH:mm:ss");
 		String date = sdf.format(new Date());
-
+		System.out.println(e.getClass().getName());
 		 int senderID = e.getSenderID();
 		 int receiverID = e.getReceiverID();
 		 String sender = clientNameOf(e.getSenderID());
-
+		 
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
+			System.out.println("txtEv ist angekommen");
+
 			String content = txtME.getText();
 			append("<td valign='top' width='15%'><b>" + sender
 					+ ": </b></td><td width='85%'>" + content + "</td><td><i>"
 					+ date + "</i></td>");
 
 		} else if (e instanceof ReNameEvent) {
-			
-			if (! model.contains(sender)) { // new join ob somebody
-				model.addElement(sender);
+			final ReNameEvent rnE = (ReNameEvent) e;
+			System.out.println("Rename ist angekommen");
+			if (! this.clientNames.contains(e)) { // new join of somebody
+				model.addElement(rnE.getName());
+				this.clientNames.add((ReNameEvent) e);
 				append("<td valign='top' width='15%'><b>" + sender
 						+ ": </b></td><td width='85%'>" 
 						+ " ist dem Chat beigetreten" + "</td><td><i>" + date
 						+ "</i></td>");
+			}else { // name change
+				// not necessary
 			}
 			
 		} else if (e instanceof ExitEvent) {
-			String exiter = clientNameOf(senderID);
-			model.removeElement(exiter);
-			append("<td valign='top' width='15%'><b>" + sender
-					+ ": </b></td><td width='85%'>" + exiter
-					+ " hat den Chat verlassen" + "</td><td><i>" + date
-					+ "</i></td>");
+			final ExitEvent exE = (ExitEvent) e;
+//			String exiter = clientNames.exE.getExiterID();// clientName with id 
+//			model.removeElement(exiter);
+//			append("<td valign='top' width='15%'><b>" + sender
+//					+ ": </b></td><td width='85%'>" + exiter
+//					+ " hat den Chat verlassen" + "</td><td><i>" + date
+//					+ "</i></td>");
 		} 
-		else if (e instanceof ReNameEvent) {			
-			String joiner = clientNameOf(receiverID); // bullshit
-			model.addElement(joiner);
-			append("<td valign='top' width='15%'><b>" + sender
-					+ ": </b></td><td width='85%'>" + joiner
-					+ " ist dem Chat beigetreten" + "</td><td><i>" + date
-					+ "</i></td>");
-		}  else if (e instanceof TellIDEvent) {
+		else   if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
 			setTitle("Client " + this.clientID);
 			append("<td width='15%'><b>" + sender
@@ -209,6 +212,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void connected(CommChannel source) {
 		this.server = source;
+		transmit(new ReNameEvent(clientID, ID_ALL, "Hans Dampf"));
 		this.setTitle("Verbunden");
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"
