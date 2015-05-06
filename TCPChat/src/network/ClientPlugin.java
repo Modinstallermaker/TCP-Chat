@@ -30,6 +30,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	private final JLabel lblStatus = new JLabel("Offline");
 	private Connection server;
 	private boolean connectionActive;
+	public boolean causedbyme=false;
 	private final Receiver receiver;
 	private final Component parent;
 
@@ -83,6 +84,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	private void disconnectMannually() {		
 		try {
+			causedbyme =true;
 			server.disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,14 +120,15 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	@Override
 	public void connected(Connection source) {
+		causedbyme=false;
 		server = source;		
 		receiver.connected(source);
 	}
 
 	@Override
-	public void disconnected(Connection source, boolean causedByOtherEnd) {
+	public void disconnected(Connection source) {
 		setDisconnectedProperties();
-		receiver.disconnected(source, causedByOtherEnd);
+		receiver.disconnected(source);
 	}
 
 	public boolean connectionActive() {

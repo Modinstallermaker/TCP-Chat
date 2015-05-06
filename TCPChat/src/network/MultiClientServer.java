@@ -151,15 +151,11 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 		updateServerStatus();
 	}
 
-
-
 	@Override
-	public void disconnected(Connection source, boolean causedByClient) {	
+	public void disconnected(Connection source) {	
 		clientList.remove(source);
-		receiver.disconnected(source, causedByClient);
-//		if (causedByClient) {
-			updateServerStatus();
-//		}
+		receiver.disconnected(source);
+		updateServerStatus();
 	}
 
 	private void updateServerStatus() {
@@ -168,9 +164,13 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 			lblStatus.setText("Server Online, " + clients + " Client"
 					+ (clients != 1 ? "s angemeldet" : " angemeldet"));
 			btnServer.setText("Server beenden");
-		} else {
-			throw new UnsupportedOperationException(
-					"this method should not be called when server is offline");
+		} 
+		else { //Server ist offline
+			try {
+				kickAll();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

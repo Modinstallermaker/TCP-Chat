@@ -1,35 +1,30 @@
 package network;
 
+import static network.Protocoll.DATA_PACK_END;
+import static network.Protocoll.DATA_PACK_START;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Scanner;
-
-import static network.Protocoll.*;
 
 public class Connection implements Runnable{
 	private static int counter;
 	private final Socket socket;
 	private final int id;
 	private final PrintStream out;
-	private final InputStream in;
 	private final Receiver receiver;
 	private final Scanner inputScanner;
 
-	// private boolean shutdown = false;
-
 	public Connection(Socket socket, Receiver receiver) throws IOException {
-		this.id = ++counter;
+		id = ++counter;
 		this.socket = socket;
 		this.receiver = receiver;
-		this.out = new PrintStream(socket.getOutputStream(), true);
-		this.in = socket.getInputStream();
-		this.inputScanner = new Scanner(in);
+		
+		out = new PrintStream(socket.getOutputStream(), true);		
+		inputScanner = new Scanner(socket.getInputStream());
 		inputScanner.useDelimiter(Protocoll.DATA_PACK_END);
 		new Thread(this, "Channel-" + id).start();
-
 	}
 
 	public void transmit(String msg) {
@@ -61,7 +56,6 @@ public class Connection implements Runnable{
 	// }
 
 	public void disconnect() throws IOException {
-		// shutdown = true;
 		socket.close();
 	}
 
@@ -72,29 +66,15 @@ public class Connection implements Runnable{
 	@Override
 	public void run() {
 		receiver.connected(this);
-//		String dataPack;
-//		byte[] buffer = new byte[2048];
-//		int length;
-
+		
 		while (inputScanner.hasNext()) {
 			String s = inputScanner.next();
 			receiver.receiveNextDataPack(s, this);
-//			System.out.println("Datenpaket an Receiver gesendet: " + s);
-		}
-//		System.out.println("Der InputStream hat sein Ende erreicht!!!");
+			System.out.println("Datenpaket an Receiver gesendet: " + s);
+		}	
 		inputScanner.close();
-		boolean causedByOtherEnd = false;
-		try {
-			int read = in.read();
-			causedByOtherEnd = true;
-		} catch (SocketException e) {
-			causedByOtherEnd = false;
-		} catch (IOException e) {
-			// shouldn't happen
-			throw new InternalError("This shouldn't happen");
-		}
-
-		receiver.disconnected(this, causedByOtherEnd);
+		
+		receiver.disconnected(this);	
 	}
 
 	private void sendAllCompletedMSGs(String dataPack) {

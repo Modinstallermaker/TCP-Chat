@@ -82,7 +82,7 @@ public class ChatServerGUI implements Receiver {
 	}
 
 	@Override
-	public void disconnected(Connection source, boolean causedByOtherEnd) {
+	public void disconnected(Connection source) {
 		final int id = source.getId();
 		broadcastAll(ChatProtocoll.clientExitedDataPack(id));
 	}

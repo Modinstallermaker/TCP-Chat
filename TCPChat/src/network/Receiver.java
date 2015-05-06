@@ -12,5 +12,5 @@ public interface Receiver {
 	 * server side) called Channel.disconnect(), second param will be false
 	 * @param source, the object (Channel) which calls this method
 	 */
-	void disconnected(Connection source, boolean causedByOtherEnd);
+	void disconnected(Connection source);
 }

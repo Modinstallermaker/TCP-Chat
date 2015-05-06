@@ -195,16 +195,15 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 	
 	@Override
-	public void disconnected(Connection source, boolean causedByOtherEnd) {
-		if (causedByOtherEnd) {
-			append("<td colspan=3><i><b>Die Serververbindung wurde unterbrochen...</b></i></td>");
-		} else {
+	public void disconnected(Connection source) {
+		if(clientPP.causedbyme)
 			append("<td colspan=3><i><b>Sie haben sich vom Chat abgemeldet...</b></i></td>");
-
-		}
-		model.clear();
+		else
+			append("<td colspan=3><i><b>Die Serververbindung wurde beendet...</b></i></td>");
 		append("<td colspan=3><b>Vielen Dank für die Nutzung des Chat Programms!</b><br><br><i>Sie sind nun NICHT mehr beim Server angemeldet!<br>Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
+		
 		server = null; // let gc do its job
+		model.clear();
 		txtInput.setEditable(false);
 		btnSend.setEnabled(false);
 	}
