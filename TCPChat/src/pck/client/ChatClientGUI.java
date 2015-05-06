@@ -152,18 +152,6 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 			append("<td valign='top' width='15%'><b>" + sender
 					+ ": </b></td><td width='85%'>" + content + "</td><td><i>"
 					+ date + "</i></td>");
-			
-//			String members ="";
-//			for(int i=0; i < model.getSize(); i++){
-//			    members+=model.getElementAt(i).substring(model.getElementAt(i).length()-1, model.getElementAt(i).length())+";;"; 			    
-//			}
-//			if(members.length()>2)
-//				members = members.substring(0, members.length() - 2);
-//			{
-				int receiver = 0; //TODO
-				transmit(tellJointMembersDataPack(receiver));
-//			}
-			
 		} else if (command.equals(CMD_TELL_JOINT_MEMBERS)) {			
 			String joiner = nameOf(Integer.parseInt(content));
 			model.addElement(joiner);
@@ -187,8 +175,10 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 					+ date + "</i></td>");
 		}	
 		else if (command.equals(CMD_TELL_JOINT_MEMBERSLIST)) {			
-		
-			append("<td colspan=3>"+content+"</td>");
+			String[] clientList = content.split(":::")[1].split("--");
+			model.removeAllElements();
+			for (String cl : clientList)			
+				model.addElement("Client "+cl);
 		}
 	}
 
@@ -199,7 +189,9 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"+ date + "</i></td>");
 		this.txtInput.setEditable(true);
-		this.btnSend.setEnabled(true);		
+		this.btnSend.setEnabled(true);	
+		int sender = 0; //TODO
+		transmit(tellJointMembersDataPack(sender));
 	}
 	
 	@Override
@@ -227,7 +219,6 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -245,14 +236,10 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void mouseClicked(MouseEvent arg0) {		
 	}
 
 	@Override
@@ -262,20 +249,13 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+	}	
 }

@@ -37,20 +37,12 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		this.receiver = receiver;
 		this.parent = parent;
 		this.btnConnect.addActionListener(this);
-		// this.txtIP.setColumns(10);
-		// this.txtPort.setColumns(3);
+		
 		final double txtf_Height = 20, lblHeight = 20, btnHeight = 30, gap = 10;
 		double[] columns = { gap, 0.6, gap, 0.4, gap };
 		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap,
 				lblHeight };
 
-		// for (double d : columns) {
-		// val += d;
-		// }
-		//
-		// for (int i = 0; i < columns.length; i++) {
-		// columns[i] /= val;
-		// }
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
 		add(lblIPAdress, "1, 1");
@@ -61,8 +53,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(),
 				Font.BOLD, 16));
 		add(lblStatus, "1, 7");
-		// setMinimumSize(getPreferredSize());
-		// setMinimumSize(new Dimension(100, 200));
+		
 		setVisible(true);
 	}
 
@@ -77,9 +68,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 			txtPort.setEditable(false);
 			connectionActive = true;
 			btnConnect.setText("Verbindung trennen");
-			lblStatus.setText("Online");
-			// muss weg, woher kennt der client den server???
-			// server.transmit(startDataPack(clientID));
+			lblStatus.setText("Online");			
 		} catch (IOException e) {
 			showMessageDialog(
 					parent,
@@ -92,9 +81,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		}
 	}
 
-	private void disconnectMannually() {
-		// muss weg, woher kennt der client den server???
-		// server.transmit(exitDataPack(clientID));
+	private void disconnectMannually() {		
 		try {
 			server.disconnect();
 		} catch (IOException e) {

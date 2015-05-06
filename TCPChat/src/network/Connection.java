@@ -95,30 +95,6 @@ public class Connection implements Runnable{
 		}
 
 		receiver.disconnected(this, causedByOtherEnd);
-		// receiver.disconnected(this, causedByOtherEnd);
-		// try {
-		// while (true) {
-		// length = in.read(buffer);
-		// if (length < 0) {
-		// // shutdown = true;
-		// break; // other end has disconnected
-		// } else {
-		// dataPack = new String(buffer, 0, length);
-		// sendMSGToReceiverIfCompleted(dataPack);
-		// System.out.println("Empfänger benachrichgt");
-		// }
-		// }
-		// this.receiver.disconnected(this, true);
-		//
-		// } catch (SocketException e) {
-		// // System.out.println("Socket eigenverantwortlich geschlossen");
-		// this.receiver.disconnected(this, false);
-		// }
-		//
-		// catch (IOException e) {
-		// e.printStackTrace();
-		// }
-
 	}
 
 	private void sendAllCompletedMSGs(String dataPack) {

@@ -34,22 +34,6 @@ public class ChatProtocoll {
 		return dp;
 	}
 
-	// public static String startDataPack(int senderID)
-	// {
-	// senderID = senderID-(int)senderID/2;
-	// // "receiverID::::senderID::::command::::content"
-	// return ID_ALL + SEPARATE_0 + String.valueOf(senderID) + SEPARATE_0 +
-	// CMD_NEW + SEPARATE_0 + "<i>ist dem Chat beigetreten...</i>";
-	// }
-
-	// public static String exitDataPack(int senderID)
-	// {
-	// senderID = senderID-(int)senderID/2;
-	// // "receiverID::::senderID::::command::::content"
-	// return ID_ALL + SEPARATE_0 + senderID + SEPARATE_0 + CMD_EXIT +
-	// SEPARATE_0 + "<i>hat den Chat verlassen...</i>";
-	// }
-
 	public static String setNameDataPack(String name) {
 		throw new UnsupportedOperationException("not impled yet");
 	}
