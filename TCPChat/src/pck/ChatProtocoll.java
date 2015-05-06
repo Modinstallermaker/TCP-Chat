@@ -64,8 +64,7 @@ public class ChatProtocoll {
 	}
 	public static String tellJointMembersDataPack(int receiverID) {
 		// "receiverID::::senderID::::command::::stringchatmitglieder"	
-		String dp = ID_ALL + SEPARATE_0 + ID_SERVER + SEPARATE_0 + CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 +"xxx";
-		System.out.println("Nach: "+dp);
+		String dp = ID_ALL + SEPARATE_0 + ID_SERVER + SEPARATE_0 + CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 +"xxx";		
 		return dp;
 	}
 

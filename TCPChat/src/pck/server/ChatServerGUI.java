@@ -46,13 +46,12 @@ public class ChatServerGUI implements Receiver {
 		else if (command.equals(CMD_TELL_JOINT_MEMBERSLIST)) {
 			String members ="";
 			for(Connection client : clientList){
-			   members+=String.valueOf(client.getId())+"--"; 			    
+			   members+=String.valueOf(client.getId())+SEPARATE_1; 			    
 			}
 			if(members.length()>2)
-				members = members.substring(0, members.length()-2);
+				members = members.substring(0, members.length()-SEPARATE_1.length());
 			broadcastAll(ID_ALL + SEPARATE_0 + senderID + SEPARATE_0
-					+ CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 + senderID + SEPARATE_1
-					+ members);
+					+ CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 + members);
 		}
 		 else {
 			throw new IllegalArgumentException(msg);

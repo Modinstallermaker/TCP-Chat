@@ -175,7 +175,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 					+ date + "</i></td>");
 		}	
 		else if (command.equals(CMD_TELL_JOINT_MEMBERSLIST)) {			
-			String[] clientList = content.split(":::")[1].split("--");
+			String[] clientList = content.split(SEPARATE_1);
 			model.removeAllElements();
 			for (String cl : clientList)			
 				model.addElement("Client "+cl);
