@@ -1,9 +1,7 @@
-package pck;
+package pck.client;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import pck.client.ChatClientGUI;
 
 class ClientStarter {
 	public static void main(String[] args) {		 
