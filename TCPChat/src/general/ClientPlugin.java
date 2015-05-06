@@ -30,7 +30,6 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	private final JLabel lblStatus = new JLabel("Offline");
 	private CommChannel server;
 	private boolean connectionActive;
-	public boolean causedbyme = false;
 	private final Receiver receiver;
 	private final Component parent;
 
@@ -38,11 +37,20 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		this.receiver = receiver;
 		this.parent = parent;
 		this.btnConnect.addActionListener(this);
-
+		// this.txtIP.setColumns(10);
+		// this.txtPort.setColumns(3);
 		final double txtf_Height = 20, lblHeight = 20, btnHeight = 30, gap = 10;
 		double[] columns = { gap, 0.6, gap, 0.4, gap };
 		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap,
 				lblHeight };
+
+		// for (double d : columns) {
+		// val += d;
+		// }
+		//
+		// for (int i = 0; i < columns.length; i++) {
+		// columns[i] /= val;
+		// }
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
 		add(lblIPAdress, "1, 1");
@@ -53,7 +61,8 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(),
 				Font.BOLD, 16));
 		add(lblStatus, "1, 7");
-
+		// setMinimumSize(getPreferredSize());
+		// setMinimumSize(new Dimension(100, 200));
 		setVisible(true);
 	}
 
@@ -69,19 +78,24 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 			connectionActive = true;
 			btnConnect.setText("Verbindung trennen");
 			lblStatus.setText("Online");
+			// muss weg, woher kennt der client den server???
+			// server.transmit(startDataPack(clientID));
 		} catch (IOException e) {
 			showMessageDialog(
 					parent,
 					"Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
+
 		} catch (IllegalArgumentException e) {
 			showMessageDialog(parent,
 					"Bitte geben Sie einen g\u00fcltigen Port ein.");
+
 		}
 	}
 
 	private void disconnectMannually() {
+		// muss weg, woher kennt der client den server???
+		// server.transmit(exitDataPack(clientID));
 		try {
-			causedbyme = true;
 			server.disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -104,30 +118,31 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 				if (0 == showConfirmDialog(parent,
 						"M\u00f6chten Sie die Verbindung wirklich trennen?"))
 					disconnectMannually();
-			} else
+			} else {
 				connectToServer();
+			}
 		}
 	}
 
 	@Override
-	public void receiveNextDataPack(String msg, CommChannel source) {
-		receiver.receiveNextDataPack(msg, source);
+	public void receiveNextMessage(MessageEvent msg, CommChannel source) {
+		receiver.receiveNextMessage(msg, source);
 	}
 
 	@Override
 	public void connected(CommChannel source) {
-		causedbyme = false;
-		server = source;
+		server = source;		
 		receiver.connected(source);
 	}
 
 	@Override
-	public void disconnected(CommChannel source) {
+	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		setDisconnectedProperties();
-		receiver.disconnected(source);
+		receiver.disconnected(source, causedByOtherEnd);
 	}
 
 	public boolean connectionActive() {
 		return this.connectionActive;
 	}
+
 }

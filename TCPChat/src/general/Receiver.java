@@ -2,7 +2,7 @@ package general;
 
 public interface Receiver {
 
-	void receiveNextDataPack(String msg, CommChannel source);
+	void receiveNextMessage(MessageEvent msg, CommChannel source);
 
 	void connected(CommChannel source);
 
@@ -12,5 +12,7 @@ public interface Receiver {
 	 * server side) called Channel.disconnect(), second param will be false
 	 * @param source, the object (Channel) which calls this method
 	 */
-	void disconnected(CommChannel source);
+	void disconnected(CommChannel source, boolean causedByOtherEnd);
+
+	void receiveNextDataPack(MessageEvent msg, CommChannel source);
 }

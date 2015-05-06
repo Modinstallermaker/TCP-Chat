@@ -2,12 +2,14 @@ package pck.server;
 
 import static pck.ChatProtocoll.*;
 import general.CommChannel;
+import general.MessageEvent;
 import general.MultiClientServer;
 import general.Receiver;
 
 import java.util.List;
 
 import pck.ChatProtocoll;
+import pck.TextMessageEvent;
 
 public class ChatServerGUI implements Receiver {
 
@@ -24,13 +26,12 @@ public class ChatServerGUI implements Receiver {
 	}
 
 	@Override
-	public void receiveNextDataPack(String msg, CommChannel source) {
+	public void receiveNextDataPack(MessageEvent msg, CommChannel source) {
 		
-		String[] parts = ChatProtocoll.split(msg);
 		final int senderID = source.getId();
-		final String receiverID = parts[0], sender = parts[1], command = parts[2], content = parts[3];
+		final int receiverID = msg.getReceiverID(), sender = msg.getSenderID();
 		
-		if (command.equals(CMD_BROAD_CAST)) {			
+		if (msg instanceof TextMessageEvent)) {			
 			broadcastAll(msg);
 		}
 		else if (command.equals(CMD_EXIT)) {
