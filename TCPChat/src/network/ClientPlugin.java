@@ -30,7 +30,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	private final JLabel lblStatus = new JLabel("Offline");
 	private Connection server;
 	private boolean connectionActive;
-	public boolean causedbyme=false;
+	public boolean causedbyme = false;
 	private final Receiver receiver;
 	private final Component parent;
 
@@ -38,10 +38,11 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		this.receiver = receiver;
 		this.parent = parent;
 		this.btnConnect.addActionListener(this);
-		
+
 		final double txtf_Height = 20, lblHeight = 20, btnHeight = 30, gap = 10;
 		double[] columns = { gap, 0.6, gap, 0.4, gap };
-		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap, lblHeight };
+		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap,
+				lblHeight };
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
 		add(lblIPAdress, "1, 1");
@@ -49,9 +50,10 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		add(txtIP, "1, 3");
 		add(txtPort, "3, 3");
 		add(btnConnect, "1,5, 3, 5");
-		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(), Font.BOLD, 16));
+		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(),
+				Font.BOLD, 16));
 		add(lblStatus, "1, 7");
-		
+
 		setVisible(true);
 	}
 
@@ -66,17 +68,20 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 			txtPort.setEditable(false);
 			connectionActive = true;
 			btnConnect.setText("Verbindung trennen");
-			lblStatus.setText("Online");			
+			lblStatus.setText("Online");
 		} catch (IOException e) {
-			showMessageDialog(parent, "Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
+			showMessageDialog(
+					parent,
+					"Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
 		} catch (IllegalArgumentException e) {
-			showMessageDialog(parent, "Bitte geben Sie einen g\u00fcltigen Port ein.");
+			showMessageDialog(parent,
+					"Bitte geben Sie einen g\u00fcltigen Port ein.");
 		}
 	}
 
-	private void disconnectMannually() {		
+	private void disconnectMannually() {
 		try {
-			causedbyme =true;
+			causedbyme = true;
 			server.disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -95,13 +100,12 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnConnect) {
-			if (connectionActive)
-			{
-				if (0 == showConfirmDialog(parent, "M\u00f6chten Sie die Verbindung wirklich trennen?"))
+			if (connectionActive) {
+				if (0 == showConfirmDialog(parent,
+						"M\u00f6chten Sie die Verbindung wirklich trennen?"))
 					disconnectMannually();
-			}
-			else
-				connectToServer();			
+			} else
+				connectToServer();
 		}
 	}
 
@@ -112,8 +116,8 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	@Override
 	public void connected(Connection source) {
-		causedbyme=false;
-		server = source;		
+		causedbyme = false;
+		server = source;
 		receiver.connected(source);
 	}
 
