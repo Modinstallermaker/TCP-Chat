@@ -14,5 +14,4 @@ public interface Receiver {
 	 */
 	void disconnected(CommChannel source, boolean causedByOtherEnd);
 
-	void receiveNextDataPack(MessageEvent msg, CommChannel source);
 }

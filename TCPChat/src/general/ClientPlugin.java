@@ -145,4 +145,6 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		return this.connectionActive;
 	}
 
+	
+
 }

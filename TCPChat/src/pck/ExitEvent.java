@@ -4,9 +4,11 @@ import general.MessageEvent;
 import static pck.ChatProtocoll.*;
 public class ExitEvent extends MessageEvent {
 	private final int exiterID;
-	public ExitEvent(int receiverID, int exiterID) {
+	private final boolean causedByExiter;
+	public ExitEvent(int receiverID, int exiterID, boolean causedByExiter) {
 		super(ID_SERVER, ID_ALL);
 		this.exiterID = exiterID;
+		this.causedByExiter = causedByExiter;
 	}
 	@Override
 	public boolean isBroadCastMessage() {
@@ -15,6 +17,9 @@ public class ExitEvent extends MessageEvent {
 	}
 	public int getExiterID() {
 		return exiterID;
+	}
+	public boolean isCausedByExiter() {
+		return causedByExiter;
 	}
 
 }
