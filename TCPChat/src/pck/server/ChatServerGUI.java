@@ -1,7 +1,7 @@
 package pck.server;
 
 import static pck.ChatProtocoll.*;
-import general.Connection;
+import general.CommChannel;
 import general.MultiClientServer;
 import general.Receiver;
 
@@ -17,14 +17,14 @@ public class ChatServerGUI implements Receiver {
 	// Server ---> Client:
 	// "sender:::command:::content"
 
-	private final List<Connection> clientList;
+	private final List<CommChannel> clientList;
 
 	public ChatServerGUI() {
 		this.clientList = new MultiClientServer("ChatServer", this).getClientList();
 	}
 
 	@Override
-	public void receiveNextDataPack(String msg, Connection source) {
+	public void receiveNextDataPack(String msg, CommChannel source) {
 		
 		String[] parts = ChatProtocoll.split(msg);
 		final int senderID = source.getId();
@@ -41,7 +41,7 @@ public class ChatServerGUI implements Receiver {
 		}
 		else if (command.equals(CMD_TELL_JOINT_MEMBERSLIST)) {
 			String members ="";
-			for(Connection client : clientList){
+			for(CommChannel client : clientList){
 			   members+=String.valueOf(client.getId())+SEPARATE_1; 			    
 			}
 			if(members.length()>2)
@@ -64,7 +64,7 @@ public class ChatServerGUI implements Receiver {
 	}
 
 	private void broadcastAll(String msg) {
-		for (Connection client : clientList) {
+		for (CommChannel client : clientList) {
 			client.transmit(msg);
 		}
 	}
@@ -78,14 +78,14 @@ public class ChatServerGUI implements Receiver {
 	// }
 
 	@Override
-	public void connected(Connection source) {
+	public void connected(CommChannel source) {
 		final int id = source.getId();
 		source.transmit(ChatProtocoll.tellIDDataPack(id));
 		broadcastAll(ChatProtocoll.clientJoinedDataPack(id));
 	}
 
 	@Override
-	public void disconnected(Connection source) {
+	public void disconnected(CommChannel source) {
 		final int id = source.getId();
 		broadcastAll(ChatProtocoll.clientExitedDataPack(id));
 	}

@@ -2,7 +2,7 @@ package pck.client;
 
 import static pck.ChatProtocoll.*;
 import general.ClientPlugin;
-import general.Connection;
+import general.CommChannel;
 import general.Receiver;
 
 import java.awt.BorderLayout;
@@ -37,7 +37,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	 * 
 	 */
 	private static final long serialVersionUID = -978956615372167638L;
-	private Connection server;
+	private CommChannel server;
 	private int clientID;
 
 	// Components
@@ -135,7 +135,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	@Override
-	public void receiveNextDataPack(String msg, Connection source) {
+	public void receiveNextDataPack(String msg, CommChannel source) {
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
 
 		String[] parts = ChatProtocoll.split(msg);
@@ -182,7 +182,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	@Override
-	public void connected(Connection source) {
+	public void connected(CommChannel source) {
 		this.server = source;		
 		this.setTitle("Verbunden");
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
@@ -193,7 +193,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 	
 	@Override
-	public void disconnected(Connection source) {
+	public void disconnected(CommChannel source) {
 		if(clientPP.causedbyme)
 			append("<td colspan=3><i><b>Sie haben sich vom Chat abgemeldet...</b></i></td>");
 		else

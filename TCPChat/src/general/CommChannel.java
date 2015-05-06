@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Connection implements Runnable{
+public class CommChannel implements Runnable{
 	private static int counter;
 	private final Socket socket;
 	private final int id;
@@ -16,7 +16,7 @@ public class Connection implements Runnable{
 	private final Receiver receiver;
 	private final Scanner inputScanner;
 
-	public Connection(Socket socket, Receiver receiver) throws IOException {
+	public CommChannel(Socket socket, Receiver receiver) throws IOException {
 		id = ++counter;
 		this.socket = socket;
 		this.receiver = receiver;

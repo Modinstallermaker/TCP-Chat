@@ -28,7 +28,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	private final JTextField txtPort = new JTextField("45678");
 	private final JButton btnConnect = new JButton("Verbinden");
 	private final JLabel lblStatus = new JLabel("Offline");
-	private Connection server;
+	private CommChannel server;
 	private boolean connectionActive;
 	public boolean causedbyme = false;
 	private final Receiver receiver;
@@ -62,7 +62,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 		try {
 			final int port = Integer.parseInt(txtPort.getText());
-			server = new Connection(new Socket(ip, port), this);
+			server = new CommChannel(new Socket(ip, port), this);
 
 			txtIP.setEditable(false);
 			txtPort.setEditable(false);
@@ -110,19 +110,19 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	}
 
 	@Override
-	public void receiveNextDataPack(String msg, Connection source) {
+	public void receiveNextDataPack(String msg, CommChannel source) {
 		receiver.receiveNextDataPack(msg, source);
 	}
 
 	@Override
-	public void connected(Connection source) {
+	public void connected(CommChannel source) {
 		causedbyme = false;
 		server = source;
 		receiver.connected(source);
 	}
 
 	@Override
-	public void disconnected(Connection source) {
+	public void disconnected(CommChannel source) {
 		setDisconnectedProperties();
 		receiver.disconnected(source);
 	}

@@ -35,7 +35,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	private final JButton btnServer = new JButton("Server Starten");
 
 	private ServerSocket ss;
-	private final List<Connection> clientList = new CopyOnWriteArrayList<>();
+	private final List<CommChannel> clientList = new CopyOnWriteArrayList<>();
 	private boolean connectionActive;
 	protected final Receiver receiver;
 
@@ -118,7 +118,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				while (connectionActive) {
 					try {
 						final Socket s = ss.accept();
-						new Connection(s, MultiClientServer.this);
+						new CommChannel(s, MultiClientServer.this);
 					} catch (SocketException e) {
 						// ServerSocket wurde geschlossen
 						ss = null; // let gc do its work
@@ -132,14 +132,14 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	}
 
 	@Override
-	public void connected(Connection source) {		
+	public void connected(CommChannel source) {		
 		clientList.add(source);
 		receiver.connected(source);
 		updateServerStatus();
 	}
 
 	@Override
-	public void disconnected(Connection source) {	
+	public void disconnected(CommChannel source) {	
 		clientList.remove(source);
 		receiver.disconnected(source);
 		updateServerStatus();
@@ -177,18 +177,18 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	}
 
 	private void kickAll() throws IOException {
-		for (Connection conn : clientList) {
+		for (CommChannel conn : clientList) {
 			conn.disconnect();
 		}
 		clientList.clear();
 	}
 
-	public  List<Connection> getClientList() {
+	public  List<CommChannel> getClientList() {
 		return clientList;
 	}
 
 	@Override
-	public void receiveNextDataPack(String data, Connection source) {
+	public void receiveNextDataPack(String data, CommChannel source) {
 		receiver.receiveNextDataPack(data, source);
 	}
 }

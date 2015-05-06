@@ -2,9 +2,9 @@ package general;
 
 public interface Receiver {
 
-	void receiveNextDataPack(String msg, Connection source);
+	void receiveNextDataPack(String msg, CommChannel source);
 
-	void connected(Connection source);
+	void connected(CommChannel source);
 
 	/**
 	 * this method is called when connection has been interrupted from other end
@@ -12,5 +12,5 @@ public interface Receiver {
 	 * server side) called Channel.disconnect(), second param will be false
 	 * @param source, the object (Channel) which calls this method
 	 */
-	void disconnected(Connection source);
+	void disconnected(CommChannel source);
 }
