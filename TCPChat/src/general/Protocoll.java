@@ -1,4 +1,4 @@
-package network;
+package general;
 
 public class Protocoll {
 	public final static String DATA_PACK_START = "";

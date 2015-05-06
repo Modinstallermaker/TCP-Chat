@@ -1,4 +1,4 @@
-package network;
+package general;
 
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;

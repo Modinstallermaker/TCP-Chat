@@ -1,7 +1,7 @@
-package network;
+package general;
 
-import static network.Protocoll.DATA_PACK_END;
-import static network.Protocoll.DATA_PACK_START;
+import static general.Protocoll.DATA_PACK_END;
+import static general.Protocoll.DATA_PACK_START;
 
 import java.io.IOException;
 import java.io.PrintStream;

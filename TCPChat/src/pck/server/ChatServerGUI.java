@@ -1,13 +1,13 @@
 package pck.server;
 
 import static pck.ChatProtocoll.*;
+import general.Connection;
+import general.MultiClientServer;
+import general.Receiver;
 
 import java.util.List;
 
 import pck.ChatProtocoll;
-import network.Connection;
-import network.MultiClientServer;
-import network.Receiver;
 
 public class ChatServerGUI implements Receiver {
 

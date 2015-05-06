@@ -1,6 +1,9 @@
 package pck.client;
 
 import static pck.ChatProtocoll.*;
+import general.ClientPlugin;
+import general.Connection;
+import general.Receiver;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -27,9 +30,6 @@ import javax.swing.JTextArea;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import network.ClientPlugin;
-import network.Connection;
-import network.Receiver;
 import pck.ChatProtocoll;
 
 public class ChatClientGUI extends JFrame implements ActionListener, KeyListener, Receiver, MouseListener {

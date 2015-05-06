@@ -1,4 +1,4 @@
-package network;
+package general;
 
 import javax.swing.JFrame;
 
