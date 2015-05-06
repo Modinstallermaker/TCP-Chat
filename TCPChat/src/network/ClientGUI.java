@@ -17,6 +17,4 @@ public class ClientGUI extends JFrame {
 		setLocation(730, 400);
 		setVisible(true);
 	}
-	
-	
 }

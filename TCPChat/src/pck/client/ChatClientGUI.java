@@ -111,8 +111,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	public void append(String s) {
 		Outputtext += "<tr>" + s + "</tr>";
-		txtOutput.setText("<html><body><table width='100%'>" + Outputtext
-				+ "</table></body></html>");
+		txtOutput.setText("<html><body><table width='100%'>" + Outputtext + "</table></body></html>");
 		scrollDown=true;	
 	}
 
@@ -189,9 +188,8 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"+ date + "</i></td>");
 		this.txtInput.setEditable(true);
-		this.btnSend.setEnabled(true);	
-		int sender = 0; //TODO
-		transmit(tellJointMembersDataPack(sender));
+		this.btnSend.setEnabled(true);			
+		transmit(tellJointMembersDataPack());
 	}
 	
 	@Override
@@ -200,7 +198,9 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 			append("<td colspan=3><i><b>Sie haben sich vom Chat abgemeldet...</b></i></td>");
 		else
 			append("<td colspan=3><i><b>Die Serververbindung wurde beendet...</b></i></td>");
-		append("<td colspan=3><b>Vielen Dank für die Nutzung des Chat Programms!</b><br><br><i>Sie sind nun NICHT mehr beim Server angemeldet!<br>Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
+		append("<td colspan=3><b>Vielen Dank für die Nutzung des Chat Programms!</b><br><br>"
+				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
+				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
 		
 		server = null; // let gc do its job
 		model.clear();

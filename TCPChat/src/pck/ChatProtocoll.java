@@ -1,6 +1,5 @@
 package pck;
 
-
 public class ChatProtocoll {
 	public final static String SEPARATE_0 = "::::";
 	public final static String SEPARATE_1 = ":::";
@@ -42,7 +41,6 @@ public class ChatProtocoll {
 		String dp = ID_YOU + SEPARATE_0 + ID_SERVER + SEPARATE_0 + CMD_TELL_ID
 				+ SEPARATE_0 + id;
 		return dp;
-
 	}
 
 	public static String privateMessageDataPack(int receiverID, String msgText) {
@@ -62,29 +60,10 @@ public class ChatProtocoll {
 				+ SEPARATE_0 + clientID;
 		return dp;
 	}
-	public static String tellJointMembersDataPack(int receiverID) {
+	public static String tellJointMembersDataPack() {
 		// "receiverID::::senderID::::command::::stringchatmitglieder"	
 		String dp = ID_ALL + SEPARATE_0 + ID_SERVER + SEPARATE_0 + CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 +"xxx";		
 		return dp;
-	}
-
-	public static String analyse(String msg, String attrib) {
-		String back = "";
-
-		String[] parts = msg.split(SEPARATE_0);
-
-		if (attrib.equals("receiverID"))
-			back = parts[0];
-		else if (attrib.equals("senderID"))
-			back = parts[1];
-		else if (attrib.equals("command"))
-			back = parts[2];
-		else if (attrib.equals("content"))
-			back = parts[3];
-		else
-			throw new IllegalArgumentException("attrib: " + attrib);
-
-		return back;
 	}
 
 	private ChatProtocoll() {

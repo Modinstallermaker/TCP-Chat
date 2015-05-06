@@ -20,8 +20,7 @@ public class ChatServerGUI implements Receiver {
 	private final List<Connection> clientList;
 
 	public ChatServerGUI() {
-		this.clientList = new MultiClientServer("ChatServer", this)
-				.getClientList();
+		this.clientList = new MultiClientServer("ChatServer", this).getClientList();
 	}
 
 	@Override
@@ -30,17 +29,14 @@ public class ChatServerGUI implements Receiver {
 		String[] parts = ChatProtocoll.split(msg);
 		final int senderID = source.getId();
 		final String receiverID = parts[0], sender = parts[1], command = parts[2], content = parts[3];
-		if (command.equals(CMD_SET_NAME)) {
-			broadcastAll(ID_ALL + SEPARATE_0 + senderID + SEPARATE_0
-					+ CMD_SET_NAME + SEPARATE_0 + senderID + SEPARATE_1
-					+ content);
-		} else if (command.equals(CMD_BROAD_CAST)) {			
+		
+		if (command.equals(CMD_BROAD_CAST)) {			
 			broadcastAll(msg);
-		} else if (command.equals(CMD_SEND_PRIVATE_MSG)) {
-			throw new UnsupportedOperationException("not implemented yet");
-		} else if (command.equals(CMD_EXIT)) {
+		}
+		else if (command.equals(CMD_EXIT)) {
 			broadcastAll(msg);
-		} else if (command.equals(CMD_TELL_JOINT_MEMBERS)) {
+		}
+		else if (command.equals(CMD_TELL_JOINT_MEMBERS)) {
 			broadcastAll(msg);
 		}
 		else if (command.equals(CMD_TELL_JOINT_MEMBERSLIST)) {
@@ -50,17 +46,24 @@ public class ChatServerGUI implements Receiver {
 			}
 			if(members.length()>2)
 				members = members.substring(0, members.length()-SEPARATE_1.length());
+			
 			broadcastAll(ID_ALL + SEPARATE_0 + senderID + SEPARATE_0
 					+ CMD_TELL_JOINT_MEMBERSLIST + SEPARATE_0 + members);
 		}
-		 else {
+		else if (command.equals(CMD_SET_NAME)) {
+			broadcastAll(ID_ALL + SEPARATE_0 + senderID + SEPARATE_0
+					+ CMD_SET_NAME + SEPARATE_0 + senderID + SEPARATE_1
+					+ content);
+		} 
+		else if (command.equals(CMD_SEND_PRIVATE_MSG)) {
+			throw new UnsupportedOperationException("not implemented yet");
+		} 
+		else {
 			throw new IllegalArgumentException(msg);
 		}
-
 	}
 
 	private void broadcastAll(String msg) {
-
 		for (Connection client : clientList) {
 			client.transmit(msg);
 		}

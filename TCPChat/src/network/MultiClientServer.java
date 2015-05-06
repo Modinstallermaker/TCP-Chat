@@ -29,7 +29,6 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	private static final long serialVersionUID = 1L;
 	private final JLabel lblIPAdress = new JLabel("IP Adresse");
 	private final JLabel lblPort = new JLabel("Port");
-	// private final JLabel lblColon = new JLabel(":");
 	private final JLabel lblIP = new JLabel();
 	private final JLabel lblStatus = new JLabel("Server Offline");
 	private final JTextField txtPort = new JTextField("45678");
@@ -45,7 +44,6 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 		this.receiver = receiver;
 		buildGUI();
 		buildServer(); // remove after testing!!!!!!!
-
 	}
 
 	private void buildGUI() {
@@ -79,7 +77,6 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 		cont.add(btnServer, "5, 2");
 		cont.add(lblStatus, "1, 4, 5, 4");
 		setContentPane(cont);
-		// setLocationRelativeTo(null);
 		setLocation(800, 400);
 		setVisible(true);
 		pack();
@@ -87,14 +84,11 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-
 		if (ev.getSource() == btnServer) {
-			if (connectionActive) {
-				destroyServer();
-			} else {
+			if (connectionActive)
+				destroyServer();			
+			else 
 				buildServer();
-
-			}
 		}
 	}
 
@@ -111,15 +105,11 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				waitForClients();
 			} catch (IOException e) {
 				e.printStackTrace();
-				showMessageDialog(this,
-						"I/O Fehler beim Erstellen des Servers, port: " + port);
-
+				showMessageDialog(this,	"I/O Fehler beim Erstellen des Servers, port: " + port);
 			}
 		} catch (IllegalArgumentException e) {
-			showMessageDialog(this,
-					"Bitte geben Sie einen g\u00fcltigen Port ein. z.B. 45678");
+			showMessageDialog(this,	"Bitte geben Sie einen g\u00fcltigen Port ein. z.B. 45678");
 		}
-
 	}
 
 	private void waitForClients() {
@@ -135,12 +125,10 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 						ss = null; // let gc do its work
 						} catch (IOException e) {
 						e.printStackTrace();
-						showMessageDialog(MultiClientServer.this,
-								"Fehler beim Akzeptieren einer Verbindung");
+						showMessageDialog(MultiClientServer.this, "Fehler beim Akzeptieren einer Verbindung");
 					}
 				}
 			}
-
 		}, "ClientAcceptor-Thread").start();
 	}
 
@@ -161,8 +149,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	private void updateServerStatus() {
 		if (connectionActive) {
 			final int clients = clientList.size();
-			lblStatus.setText("Server Online, " + clients + " Client"
-					+ (clients != 1 ? "s angemeldet" : " angemeldet"));
+			lblStatus.setText("Server Online, " + clients + " Client" + (clients != 1 ? "s angemeldet" : " angemeldet"));
 			btnServer.setText("Server beenden");
 		} 
 		else { //Server ist offline
@@ -172,13 +159,10 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	private void destroyServer() {
-		if (clientList.isEmpty()
-				|| 0 == showConfirmDialog(this,
-						"Sind Sie sicher, dass sie den Server beenden m\u00f6chten?"))
+		if (clientList.isEmpty() || 0 == showConfirmDialog(this, "Sind Sie sicher, dass sie den Server beenden m\u00f6chten?"))
 			try {
 				kickAll();
 
@@ -189,8 +173,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				txtPort.setEditable(true);
 				btnServer.setText("Server starten");
 			} catch (IOException e) {
-				showMessageDialog(this,
-						"Fehler beim schlie\u00dfen des Servers");
+				showMessageDialog(this,	"Fehler beim schlie\u00dfen des Servers");
 			}
 	}
 

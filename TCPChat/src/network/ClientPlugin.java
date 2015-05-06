@@ -41,9 +41,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		
 		final double txtf_Height = 20, lblHeight = 20, btnHeight = 30, gap = 10;
 		double[] columns = { gap, 0.6, gap, 0.4, gap };
-		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap,
-				lblHeight };
-
+		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap, lblHeight };
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
 		add(lblIPAdress, "1, 1");
@@ -51,8 +49,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		add(txtIP, "1, 3");
 		add(txtPort, "3, 3");
 		add(btnConnect, "1,5, 3, 5");
-		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(),
-				Font.BOLD, 16));
+		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(), Font.BOLD, 16));
 		add(lblStatus, "1, 7");
 		
 		setVisible(true);
@@ -71,14 +68,9 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 			btnConnect.setText("Verbindung trennen");
 			lblStatus.setText("Online");			
 		} catch (IOException e) {
-			showMessageDialog(
-					parent,
-					"Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
-
+			showMessageDialog(parent, "Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
 		} catch (IllegalArgumentException e) {
-			showMessageDialog(parent,
-					"Bitte geben Sie einen g\u00fcltigen Port ein.");
-
+			showMessageDialog(parent, "Bitte geben Sie einen g\u00fcltigen Port ein.");
 		}
 	}
 
@@ -103,13 +95,13 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnConnect) {
-			if (connectionActive) {
-				if (0 == showConfirmDialog(parent,
-						"M\u00f6chten Sie die Verbindung wirklich trennen?"))
+			if (connectionActive)
+			{
+				if (0 == showConfirmDialog(parent, "M\u00f6chten Sie die Verbindung wirklich trennen?"))
 					disconnectMannually();
-			} else {
-				connectToServer();
 			}
+			else
+				connectToServer();			
 		}
 	}
 
@@ -134,5 +126,4 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	public boolean connectionActive() {
 		return this.connectionActive;
 	}
-
 }
