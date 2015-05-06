@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import layout.TableLayout;
 
 public class MultiClientServer extends JFrame implements ActionListener, Receiver {
-	/**
+	/**{@link #action(java.awt.Event, Object)}
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -42,8 +42,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	public MultiClientServer(String title, Receiver receiver) {
 		super(title);
 		this.receiver = receiver;
-		buildGUI();
-		buildServer(); // remove after testing!!!!!!!
+		buildGUI();	
 	}
 
 	private void buildGUI() {
