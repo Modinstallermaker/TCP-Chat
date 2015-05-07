@@ -172,7 +172,7 @@ public class MultiClientServer extends JFrame implements ActionListener,
 	}
 
 	private void updateServerStatus() {
-		if (connectionActive) {
+		if (connectionActive ) {
 			final int clients = clientList.size();
 			lblStatus.setText("Server Online, " + clients + " Client"
 					+ (clients != 1 ? "s angemeldet" : " angemeldet"));
