@@ -128,8 +128,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		txtOutput.setText("<html><body><table width='100%'>" + Outputtext
 				+ "</table></body></html>");
 		scrollDown = true;
-		txtOutput.setText("<html><body><table width='100%'>" + Outputtext + "</table></body></html>");
-		scrollDown=true;	
+		txtOutput.setText("<html><body><table width='100%'>" + Outputtext
+				+ "</table></body></html>");
+		scrollDown = true;
 	}
 
 	@Override
@@ -157,57 +158,63 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				"HH:mm:ss");
 		String date = sdf.format(new Date());
 		System.out.println(e.getClass().getName());
-		 int senderID = e.getSenderID();
-		 int receiverID = e.getReceiverID();
-		 String sender = clientNameOf(e.getSenderID());
-		 
+		int senderID = e.getSenderID();
+		int receiverID = e.getReceiverID();
+
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
 			System.out.println("txtEv ist angekommen");
 
 			String content = txtME.getText();
-			append("<td valign='top' width='15%'><b>" + sender
+			append("<td valign='top' width='15%'><b>" + clientNameOf(senderID)
 					+ ": </b></td><td width='85%'>" + content + "</td><td><i>"
 					+ date + "</i></td>");
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
 			System.out.println("Rename ist angekommen");
-			if (! this.clientNames.contains(e)) { // new join of somebody
+			if (!this.clientNames.contains(e)) { // new join of somebody
+				final ReNameEvent rne = (ReNameEvent)e;
 				model.addElement(rnE.getName());
-				this.clientNames.add((ReNameEvent) e);
-				append("<td valign='top' width='15%'><b>" + sender
-						+ ": </b></td><td width='85%'>" 
+				
+				this.clientNames.add(rne);
+				append("<td valign='top' width='15%'><b>" + rne.getName()
+						+ ": </b></td><td width='85%'>"
 						+ " ist dem Chat beigetreten" + "</td><td><i>" + date
 						+ "</i></td>");
-			}else { // name change
-				// not necessary
+			} else { // name change
+				// not necessary yet
 			}
-			
+
 		} else if (e instanceof ExitEvent) {
 			final ExitEvent exE = (ExitEvent) e;
-//			String exiter = clientNames.exE.getExiterID();// clientName with id 
-//			model.removeElement(exiter);
-//			append("<td valign='top' width='15%'><b>" + sender
-//					+ ": </b></td><td width='85%'>" + exiter
-//					+ " hat den Chat verlassen" + "</td><td><i>" + date
-//					+ "</i></td>");
-		} 
-		else   if (e instanceof TellIDEvent) {
+			// String exiter = clientNames.exE.getExiterID();// clientName with
+			// id
+			// model.removeElement(exiter);
+			// append("<td valign='top' width='15%'><b>" + sender
+			// + ": </b></td><td width='85%'>" + exiter
+			// + " hat den Chat verlassen" + "</td><td><i>" + date
+			// + "</i></td>");
+		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
+			final TellIDEvent tid =(TellIDEvent)e;
 			setTitle("Client " + this.clientID);
-			append("<td width='15%'><b>" + sender
+			append("<td width='15%'><b>" + tid.getServerName()
 					+ ": </b></td><td width='85%'>"
 					+ "Deine Client-ID lautet: " + clientID + "</td><td><i>"
 					+ date + "</i></td>");
-		} 
+		}
 	}
 
 	private String clientNameOf(int senderID) {
-		// TODO Auto-generated method stub
-		return null;
-		}	
-		
+		for (ReNameEvent reNameEvent : this.clientNames) {
+			if (reNameEvent.getSenderID() == senderID) {
+				return reNameEvent.getName();
+			}
+		}
+		throw new RuntimeException("Name not found");
+
+	}
 
 	@Override
 	public void connected(CommChannel source) {
@@ -219,22 +226,21 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				+ date + "</i></td>");
 		this.txtInput.setEditable(true);
 		this.btnSend.setEnabled(true);
-		this.btnSend.setEnabled(true);			
-//		transmit(new ReNameEvent(-55242542, ID_ALL, "Hans Peter"));
+		this.btnSend.setEnabled(true);
+		// transmit(new ReNameEvent(-55242542, ID_ALL, "Hans Peter"));
 	}
 
 	@Override
-
 	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		if (causedByOtherEnd) {
 			append("<td colspan=3><i><b>Die Serververbindung wurde unterbrochen...</b></i></td>");
-		} else {		
+		} else {
 			append("<td colspan=3><i><b>Sie haben sich vom Chat abgemeldet...</b></i></td>");
-		}	
+		}
 		append("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
 				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
 				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
-		
+
 		server = null; // let gc do its job
 		model.clear();
 		txtInput.setEditable(false);

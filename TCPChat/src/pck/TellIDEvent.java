@@ -14,4 +14,11 @@ public class TellIDEvent extends MessageEvent {
 		return false;
 	}
 
+
+
+	public String getServerName() {
+		// TODO Auto-generated method stub
+		return "Server";
+	}
+
 }

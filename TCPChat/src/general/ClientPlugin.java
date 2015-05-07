@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -131,7 +132,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	@Override
 	public void connected(CommChannel source) {
-		server = source;		
+		server = Objects.requireNonNull(source);	//TODO	remove require
 		receiver.connected(source);
 	}
 
