@@ -11,7 +11,7 @@ public class ReNameEvent extends MessageEvent {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override

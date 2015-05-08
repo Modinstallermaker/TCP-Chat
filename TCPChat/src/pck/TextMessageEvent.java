@@ -11,7 +11,7 @@ public class TextMessageEvent extends MessageEvent {
 	}
 
 	public String getText() {
-		return text;
+		return this.text;
 	}
 
 	@Override

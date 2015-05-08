@@ -28,7 +28,7 @@ public class CommChannel implements Runnable {
 		this.in = new ObjectInputStream(socket.getInputStream());
 		// this.inputScanner = new Scanner(in);
 		// inputScanner.useDelimiter(Protocoll.DATA_PACK_END);
-		new Thread(this, "Channel-" + id).start();
+		new Thread(this, "Channel-" + this.id).start();
 
 	}
 
@@ -61,22 +61,22 @@ public class CommChannel implements Runnable {
 
 	public void disconnect() throws IOException {
 		// shutdown = true;
-		socket.close();
+		this.socket.close();
 	}
 
 	public int getId() {
-		return id;
+		return this.id;
 	}
 
 	@Override
 	public void run() {
-		receiver.connected(this);
+		this.receiver.connected(this);
 		MessageEvent msg;
 		boolean causedByOtherEnd = true;
 
 		try {
-			while (((msg = (MessageEvent) in.readObject())) != null) {
-				receiver.receiveNextMessage(msg, this);
+			while (((msg = (MessageEvent) this.in.readObject())) != null) {
+				this.receiver.receiveNextMessage(msg, this);
 			}
 		} catch (ClassNotFoundException e) { // shouldn't happen
 
@@ -87,11 +87,11 @@ public class CommChannel implements Runnable {
 			causedByOtherEnd = true;
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
+			// shouldn't happen
 			e.printStackTrace();
 		}
 
-		receiver.disconnected(this, causedByOtherEnd);// ///////////////////////////////////////////
+		this.receiver.disconnected(this, causedByOtherEnd);// ///////////////////////////////////////////
 	}
 
 }

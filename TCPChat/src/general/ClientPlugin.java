@@ -54,40 +54,40 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		// }
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
-		add(lblIPAdress, "1, 1");
-		add(lblPort, "3, 1");
-		add(txtIP, "1, 3");
-		add(txtPort, "3, 3");
-		add(btnConnect, "1,5, 3, 5");
-		lblStatus.setFont(new Font(lblStatus.getFont().getFontName(),
+		add(this.lblIPAdress, "1, 1");
+		add(this.lblPort, "3, 1");
+		add(this.txtIP, "1, 3");
+		add(this.txtPort, "3, 3");
+		add(this.btnConnect, "1,5, 3, 5");
+		this.lblStatus.setFont(new Font(this.lblStatus.getFont().getFontName(),
 				Font.BOLD, 16));
-		add(lblStatus, "1, 7");
+		add(this.lblStatus, "1, 7");
 		// setMinimumSize(getPreferredSize());
 		// setMinimumSize(new Dimension(100, 200));
 		setVisible(true);
 	}
 
 	private void connectToServer() {
-		final String ip = txtIP.getText();
+		final String ip = this.txtIP.getText();
 
 		try {
-			final int port = Integer.parseInt(txtPort.getText());
-			server = new CommChannel(new Socket(ip, port), this);
+			final int port = Integer.parseInt(this.txtPort.getText());
+			this.server = new CommChannel(new Socket(ip, port), this);
 
-			txtIP.setEditable(false);
-			txtPort.setEditable(false);
-			connectionActive = true;
-			btnConnect.setText("Verbindung trennen");
-			lblStatus.setText("Online");
+			this.txtIP.setEditable(false);
+			this.txtPort.setEditable(false);
+			this.connectionActive = true;
+			this.btnConnect.setText("Verbindung trennen");
+			this.lblStatus.setText("Online");
 			// muss weg, woher kennt der client den server???
 			// server.transmit(startDataPack(clientID));
 		} catch (IOException e) {
 			showMessageDialog(
-					parent,
+					this.parent,
 					"Fehler beim Verbinden, bitte stellen Sie sicher, dass der Server existiert und IP Adresse und Port korrekt sind!");
 
 		} catch (IllegalArgumentException e) {
-			showMessageDialog(parent,
+			showMessageDialog(this.parent,
 					"Bitte geben Sie einen g\u00fcltigen Port ein.");
 
 		}
@@ -97,7 +97,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		// muss weg, woher kennt der client den server???
 		// server.transmit(exitDataPack(clientID));
 		try {
-			server.disconnect();
+			this.server.disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -105,18 +105,19 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	}
 
 	private void setDisconnectedProperties() {
-		server = null;
-		txtIP.setEditable(true);
-		txtPort.setEditable(true);
-		connectionActive = false;
-		lblStatus.setText("Offline");
-		btnConnect.setText("Verbinden");
+		this.server = null;
+		this.txtIP.setEditable(true);
+		this.txtPort.setEditable(true);
+		this.connectionActive = false;
+		this.lblStatus.setText("Offline");
+		this.btnConnect.setText("Verbinden");
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnConnect) {
-			if (connectionActive) {
-				if (0 == showConfirmDialog(parent,
+		if (e.getSource() == this.btnConnect) {
+			if (this.connectionActive) {
+				if (0 == showConfirmDialog(this.parent,
 						"M\u00f6chten Sie die Verbindung wirklich trennen?"))
 					disconnectMannually();
 			} else {
@@ -127,19 +128,19 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 
 	@Override
 	public void receiveNextMessage(MessageEvent msg, CommChannel source) {
-		receiver.receiveNextMessage(msg, source);
+		this.receiver.receiveNextMessage(msg, source);
 	}
 
 	@Override
 	public void connected(CommChannel source) {
-		server = Objects.requireNonNull(source);	//TODO	remove require
-		receiver.connected(source);
+		this.server = Objects.requireNonNull(source);	//TODO	remove require
+		this.receiver.connected(source);
 	}
 
 	@Override
 	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		setDisconnectedProperties();
-		receiver.disconnected(source, causedByOtherEnd);
+		this.receiver.disconnected(source, causedByOtherEnd);
 	}
 
 	public boolean connectionActive() {

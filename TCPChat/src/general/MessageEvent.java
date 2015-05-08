@@ -21,12 +21,12 @@ public abstract class MessageEvent implements Serializable {
 
 
 	public int getSenderID() {
-		return senderID;
+		return this.senderID;
 	}
 
 
 	public int getReceiverID() {
-		return receiverID;
+		return this.receiverID;
 	}
 
 

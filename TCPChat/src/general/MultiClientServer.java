@@ -13,13 +13,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.text.NumberFormatter;
 
 import layout.TableLayout;
 
@@ -39,6 +43,7 @@ public class MultiClientServer extends JFrame implements ActionListener,
 
 	private ServerSocket ss;
 	private final List<CommChannel> clientList = new Vector<>();
+																		
 	private boolean connectionActive;
 	protected final Receiver receiver;
 
@@ -54,13 +59,14 @@ public class MultiClientServer extends JFrame implements ActionListener,
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			lblIP.setText(ip);
+			this.lblIP.setText(ip);
 
 		} catch (UnknownHostException e) {
-			lblIP.setText("IP unbekannt");
+			this.lblIP.setText("IP unbekannt");
 		}
-		Container cont = new Container();
-		btnServer.addActionListener(this);
+
+		final Container cont = new Container();
+		this.btnServer.addActionListener(this);
 
 		double[] columns = { 10, 80, 0, 50, 10, 100, 10 };
 		double[] rows = { 10, 30, 30, 20, 20, 10 };
@@ -74,12 +80,12 @@ public class MultiClientServer extends JFrame implements ActionListener,
 		}
 
 		cont.setLayout(new TableLayout(new double[][] { columns, rows }));
-		cont.add(lblIPAdress, "1, 1");
-		cont.add(lblPort, "3, 1");
-		cont.add(lblIP, "1, 2");
-		cont.add(txtPort, "3, 2");
-		cont.add(btnServer, "5, 2");
-		cont.add(lblStatus, "1, 4, 5, 4");
+		cont.add(this.lblIPAdress, "1, 1");
+		cont.add(this.lblPort, "3, 1");
+		cont.add(this.lblIP, "1, 2");
+		cont.add(this.txtPort, "3, 2");
+		cont.add(this.btnServer, "5, 2");
+		cont.add(this.lblStatus, "1, 4, 5, 4");
 		setContentPane(cont);
 		// setLocationRelativeTo(null);
 		setLocation(800, 400);
@@ -90,8 +96,8 @@ public class MultiClientServer extends JFrame implements ActionListener,
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 
-		if (ev.getSource() == btnServer) {
-			if (connectionActive) {
+		if (ev.getSource() == this.btnServer) {
+			if (this.connectionActive) {
 				destroyServer();
 			} else {
 				buildServer();
@@ -103,13 +109,13 @@ public class MultiClientServer extends JFrame implements ActionListener,
 	private void buildServer() {
 
 		try {
-			final int port = Integer.parseInt(txtPort.getText());
+			final int port = Integer.parseInt(this.txtPort.getText());
 			try {
-				ss = new ServerSocket(port);
-				connectionActive = true;
-				txtPort.setEditable(false);
-				lblStatus.setText("Server Online, warte auf Clients...");
-				btnServer.setText("Server beenden");
+				this.ss = new ServerSocket(port);
+				this.connectionActive = true;
+				this.txtPort.setEditable(false);
+				this.lblStatus.setText("Server Online, warte auf Clients...");
+				this.btnServer.setText("Server beenden");
 				waitForClients();
 			} catch (BindException e) {
 				e.printStackTrace();
@@ -134,17 +140,19 @@ public class MultiClientServer extends JFrame implements ActionListener,
 
 	private void waitForClients() {
 		new Thread(new Runnable() {
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-					try {while (connectionActive) {
-				
-						final Socket s = ss.accept();
+				try {
+					while (MultiClientServer.this.connectionActive) {
+
+						final Socket s = MultiClientServer.this.ss.accept();
 						new CommChannel(s, MultiClientServer.this);
-					
+
 					}
 				} catch (SocketException e) {
 					// ServerSocket wurde geschlossen
-					ss = null; // let gc do its work
+					MultiClientServer.this.ss = null; // let gc do its work
 				} catch (IOException e) {
 					e.printStackTrace();
 					showMessageDialog(MultiClientServer.this,
@@ -157,26 +165,26 @@ public class MultiClientServer extends JFrame implements ActionListener,
 
 	@Override
 	public void connected(CommChannel source) {
-		clientList.add(source);
-		receiver.connected(source);
+		this.clientList.add(source);
+		this.receiver.connected(source);
 		updateServerStatus();
 	}
 
 	@Override
 	public void disconnected(CommChannel source, boolean causedByClient) {
-		clientList.remove(source);
-		receiver.disconnected(source, causedByClient);
-		 if (causedByClient) {
-		updateServerStatus();
-		 }
+		this.clientList.remove(source);
+		this.receiver.disconnected(source, causedByClient);
+		if (causedByClient) {
+			updateServerStatus();
+		}
 	}
 
 	private void updateServerStatus() {
-		if (connectionActive ) {
-			final int clients = clientList.size();
-			lblStatus.setText("Server Online, " + clients + " Client"
+		if (this.connectionActive) {
+			final int clients = this.clientList.size();
+			this.lblStatus.setText("Server Online, " + clients + " Client"
 					+ (clients != 1 ? "s angemeldet" : " angemeldet"));
-			btnServer.setText("Server beenden");
+			this.btnServer.setText("Server beenden");
 		} else {
 			throw new UnsupportedOperationException(
 					"this method should not be called when server is offline");
@@ -185,18 +193,18 @@ public class MultiClientServer extends JFrame implements ActionListener,
 	}
 
 	private void destroyServer() {
-		if (clientList.isEmpty()
+		if (this.clientList.isEmpty()
 				|| 0 == showConfirmDialog(this,
 						"Sind Sie sicher, dass sie den Server beenden m\u00f6chten?"))
 			try {
 				kickAll();
 
-				ss.close();
-				ss = null;
-				connectionActive = false;
-				lblStatus.setText("Server Offline");
-				txtPort.setEditable(true);
-				btnServer.setText("Server starten");
+				this.ss.close();
+				this.ss = null;
+				this.connectionActive = false;
+				this.lblStatus.setText("Server Offline");
+				this.txtPort.setEditable(true);
+				this.btnServer.setText("Server starten");
 			} catch (IOException e) {
 				showMessageDialog(this,
 						"Fehler beim schlie\u00dfen des Servers");
@@ -204,18 +212,20 @@ public class MultiClientServer extends JFrame implements ActionListener,
 	}
 
 	private void kickAll() throws IOException {
-		for (CommChannel conn : clientList) {
-			conn.disconnect();
+		synchronized (this.clientList) {
+			for (CommChannel conn : this.clientList) {
+				conn.disconnect();
+			}
+			//		this.clientList.clear();
 		}
-		clientList.clear();
 	}
 
 	public List<CommChannel> getClientList() {
-		return clientList;
+		return this.clientList;
 	}
 
 	@Override
 	public void receiveNextMessage(MessageEvent data, CommChannel source) {
-		receiver.receiveNextMessage(data, source);
+		this.receiver.receiveNextMessage(data, source);
 	}
 }

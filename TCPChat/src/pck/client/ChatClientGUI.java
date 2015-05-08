@@ -53,7 +53,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	private final JButton btnClear = new JButton(
 			"<html><body>Verlauf<br>l\u00F6schen</body></html>");
 	private DefaultListModel<String> model = new DefaultListModel<String>();
-	private final JList<String> listMembers = new JList<String>(model);
+	private final JList<String> listMembers = new JList<String>(this.model);
 	private final JEditorPane txtOutput = new JEditorPane("text/html", null);
 	private final JTextArea txtInput = new JTextArea();
 	private final JButton btnSend = new JButton("Senden");
@@ -65,23 +65,24 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	public ChatClientGUI() {
 		super("Nicht verbunden");
-		clientPP = new ClientPlugin(this, this);
+		this.clientPP = new ClientPlugin(this, this);
 		buildGUI();
 	}
 
 	protected void buildGUI() {
 		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				clientPP, new JScrollPane(listMembers));
+				this.clientPP, new JScrollPane(this.listMembers));
 
-		txtOutput.setEditable(false);
-		txtOutput.setDocument(doc);
-		txtOutput.setEditorKit(kit);
+		this.txtOutput.setEditable(false);
+		this.txtOutput.setDocument(this.doc);
+		this.txtOutput.setEditorKit(this.kit);
 
-		JScrollPane scrollPaneTextOut = new JScrollPane(txtOutput);
+		JScrollPane scrollPaneTextOut = new JScrollPane(this.txtOutput);
 		scrollPaneTextOut.getVerticalScrollBar().addAdjustmentListener(
 				new AdjustmentListener() {
+					@Override
 					public void adjustmentValueChanged(AdjustmentEvent e) {
-						if (scrollDown)
+						if (ChatClientGUI.this.scrollDown)
 							e.getAdjustable().setValue(
 									e.getAdjustable().getMaximum());
 					}
@@ -90,12 +91,12 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		Container contButtons = new JPanel();
 		contButtons.setLayout(new BorderLayout());
-		contButtons.add(btnSend, BorderLayout.CENTER);
-		contButtons.add(btnClear, BorderLayout.SOUTH);
+		contButtons.add(this.btnSend, BorderLayout.CENTER);
+		contButtons.add(this.btnClear, BorderLayout.SOUTH);
 
 		Container contBottom = new JPanel();
 		contBottom.setLayout(new BorderLayout());
-		contBottom.add(new JScrollPane(txtInput), BorderLayout.CENTER);
+		contBottom.add(new JScrollPane(this.txtInput), BorderLayout.CENTER);
 		contBottom.add(contButtons, BorderLayout.EAST);
 
 		JSplitPane contentRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
@@ -107,9 +108,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
 
 		add(splitPaneContent);
-		txtInput.addKeyListener(this);
-		btnSend.addActionListener(this);
-		btnClear.addActionListener(this);
+		this.txtInput.addKeyListener(this);
+		this.btnSend.addActionListener(this);
+		this.btnClear.addActionListener(this);
 
 		append("<td colspan=3><i>Bitte klicken Sie links oben auf \"Verbinden\"...</i></td>");
 
@@ -119,36 +120,36 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		pack();
 		setLocationRelativeTo(null);
-		txtInput.setEditable(false);
-		btnSend.setEnabled(false);
+		this.txtInput.setEditable(false);
+		this.btnSend.setEnabled(false);
 	}
 
 	public void append(String s) {
-		Outputtext += "<tr>" + s + "</tr>";
-		txtOutput.setText("<html><body><table width='100%'>" + Outputtext
+		this.Outputtext += "<tr>" + s + "</tr>";
+		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext
 				+ "</table></body></html>");
-		scrollDown = true;
-		txtOutput.setText("<html><body><table width='100%'>" + Outputtext
+		this.scrollDown = true;
+		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext
 				+ "</table></body></html>");
-		scrollDown = true;
+		this.scrollDown = true;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
-		if (src == btnSend) {
+		if (src == this.btnSend) {
 			senden();
-		} else if (src == btnClear) {
-			Outputtext = " ";
+		} else if (src == this.btnClear) {
+			this.Outputtext = " ";
 			append("<td colspan=3><i>Konsole wurde gel\u00fcscht...</i></td>");
 		}
 	}
 
 	public void senden() {
-		String neu = txtInput.getText().trim();
+		String neu = this.txtInput.getText().trim();
 		if (neu.length() > 0) {
 			sendBroadcastTextMessage(neu);
-			txtInput.setText("");
+			this.txtInput.setText("");
 		}
 	}
 
@@ -175,7 +176,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			System.out.println("Rename ist angekommen");
 			if (!this.clientNames.contains(e)) { // new join of somebody
 				final ReNameEvent rne = (ReNameEvent)e;
-				model.addElement(rnE.getName());
+				this.model.addElement(rnE.getName());
 				
 				this.clientNames.add(rne);
 				append("<td valign='top' width='15%'><b>" + rne.getName()
@@ -201,7 +202,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			setTitle("Client " + this.clientID);
 			append("<td width='15%'><b>" + tid.getServerName()
 					+ ": </b></td><td width='85%'>"
-					+ "Deine Client-ID lautet: " + clientID + "</td><td><i>"
+					+ "Deine Client-ID lautet: " + this.clientID + "</td><td><i>"
 					+ date + "</i></td>");
 		}
 	}
@@ -219,7 +220,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void connected(CommChannel source) {
 		this.server = source;
-		transmit(new ReNameEvent(clientID, ID_ALL, "Hans Dampf"));
+		transmit(new ReNameEvent(this.clientID, ID_ALL, "Hans Dampf"));
 		this.setTitle("Verbunden");
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"
@@ -241,18 +242,18 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
 				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
 
-		server = null; // let gc do its job
-		model.clear();
-		txtInput.setEditable(false);
-		btnSend.setEnabled(false);
+		this.server = null; // let gc do its job
+		this.model.clear();
+		this.txtInput.setEditable(false);
+		this.btnSend.setEnabled(false);
 	}
 
 	private void transmit(MessageEvent dataPacket) {
-		server.transmit(dataPacket);
+		this.server.transmit(dataPacket);
 	}
 
 	private void sendBroadcastTextMessage(String text) {
-		transmit(new TextMessageEvent(clientID, ID_ALL, text));
+		transmit(new TextMessageEvent(this.clientID, ID_ALL, text));
 	}
 
 	@Override
@@ -263,9 +264,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	public void keyReleased(KeyEvent e) {
 		Object src = e.getSource();
 		int key = e.getKeyCode();
-		if (src == txtInput) {
+		if (src == this.txtInput) {
 			if (e.isShiftDown() && key == KeyEvent.VK_ENTER) {
-				txtInput.append(System.getProperty("line.separator"));
+				this.txtInput.append(System.getProperty("line.separator"));
 			} else if (key == KeyEvent.VK_ENTER) {
 				senden();
 			}
@@ -283,7 +284,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		scrollDown = false;
+		this.scrollDown = false;
 	}
 
 	@Override

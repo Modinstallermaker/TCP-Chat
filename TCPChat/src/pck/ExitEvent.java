@@ -3,6 +3,10 @@ package pck;
 import general.MessageEvent;
 import static pck.ChatProtocoll.*;
 public class ExitEvent extends MessageEvent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6939257521743529286L;
 	private final int exiterID;
 	private final boolean causedByExiter;
 	public ExitEvent(int receiverID, int exiterID, boolean causedByExiter) {
@@ -12,14 +16,13 @@ public class ExitEvent extends MessageEvent {
 	}
 	@Override
 	public boolean isBroadCastMessage() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	public int getExiterID() {
-		return exiterID;
+		return this.exiterID;
 	}
 	public boolean isCausedByExiter() {
-		return causedByExiter;
+		return this.causedByExiter;
 	}
 
 }

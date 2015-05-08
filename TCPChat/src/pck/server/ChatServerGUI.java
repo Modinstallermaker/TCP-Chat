@@ -31,8 +31,6 @@ public class ChatServerGUI implements Receiver {
 
 	@Override
 	public void receiveNextMessage(MessageEvent e, CommChannel source) {
-
-
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
 			if (txtME.isBroadCastMessage()) {
@@ -41,20 +39,22 @@ public class ChatServerGUI implements Receiver {
 				throw new UnsupportedOperationException();
 			}
 		} else if (e instanceof ExitEvent) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("Not impled yet");
 		}
 
 		else if (e instanceof ReNameEvent) {
 			broadcast(e);
 			
 		}  else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(e.toString());
 		}
 	}
 
-	private void broadcast(MessageEvent msg) {
-		for (CommChannel client : clientList) {
-			client.transmit(msg);
+	private  void broadcast(MessageEvent msg) {
+		synchronized (this.clientList) {
+			for (CommChannel client : this.clientList) {
+				client.transmit(msg);
+			}
 		}
 	}
 
