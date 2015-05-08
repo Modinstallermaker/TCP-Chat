@@ -7,7 +7,9 @@ import general.Receiver;
 import general.MessageEvent;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -25,11 +27,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -52,10 +56,12 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	private final ClientPlugin clientPP;
 	private final JButton btnClear = new JButton(
 			"<html><body>Verlauf<br>l\u00F6schen</body></html>");
-	private DefaultListModel<String> model = new DefaultListModel<String>();
-	private final JList<String> listMembers = new JList<String>(this.model);
+	private DefaultListModel<String> model = new DefaultListModel<>();
+	private final JList<String> listMembers = new JList<>(this.model);
 	private final JEditorPane txtOutput = new JEditorPane("text/html", null);
 	private final JTextArea txtInput = new JTextArea();
+	private final JLabel lblName = new JLabel("Name: ");
+	private final JTextField txtName = new JTextField(System.getProperty("user.name"));
 	private final JButton btnSend = new JButton("Senden");
 	private final HTMLEditorKit kit = new HTMLEditorKit();
 	private final HTMLDocument doc = new HTMLDocument();
@@ -70,8 +76,16 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	}
 
 	protected void buildGUI() {
+		
+		Container memberPane = new Container();
+		memberPane.setLayout(new BorderLayout());
+		memberPane.add(this.txtName, BorderLayout.CENTER);
+		memberPane.add(this.lblName, BorderLayout.WEST);
+		this.txtName.setPreferredSize(this.txtName.getSize());
+
+		memberPane.add(new JScrollPane(this.listMembers), BorderLayout.SOUTH);
 		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				this.clientPP, new JScrollPane(this.listMembers));
+				this.clientPP, memberPane);
 
 		this.txtOutput.setEditable(false);
 		this.txtOutput.setDocument(this.doc);
@@ -126,11 +140,11 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	public void append(String s) {
 		this.Outputtext += "<tr>" + s + "</tr>";
-		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext
-				+ "</table></body></html>");
+		this.txtOutput.setText("<html><body><table width='100%'>"
+				+ this.Outputtext + "</table></body></html>");
 		this.scrollDown = true;
-		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext
-				+ "</table></body></html>");
+		this.txtOutput.setText("<html><body><table width='100%'>"
+				+ this.Outputtext + "</table></body></html>");
 		this.scrollDown = true;
 	}
 
@@ -164,8 +178,6 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
-			System.out.println("txtEv ist angekommen");
-
 			String content = txtME.getText();
 			append("<td valign='top' width='15%'><b>" + clientNameOf(senderID)
 					+ ": </b></td><td width='85%'>" + content + "</td><td><i>"
@@ -173,11 +185,10 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
-			System.out.println("Rename ist angekommen");
 			if (!this.clientNames.contains(e)) { // new join of somebody
-				final ReNameEvent rne = (ReNameEvent)e;
+				final ReNameEvent rne = (ReNameEvent) e;
 				this.model.addElement(rnE.getName());
-				
+
 				this.clientNames.add(rne);
 				append("<td valign='top' width='15%'><b>" + rne.getName()
 						+ ": </b></td><td width='85%'>"
@@ -198,12 +209,6 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			// + "</i></td>");
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
-			final TellIDEvent tid =(TellIDEvent)e;
-			setTitle("Client " + this.clientID);
-			append("<td width='15%'><b>" + tid.getServerName()
-					+ ": </b></td><td width='85%'>"
-					+ "Deine Client-ID lautet: " + this.clientID + "</td><td><i>"
-					+ date + "</i></td>");
 		}
 	}
 
@@ -220,15 +225,15 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void connected(CommChannel source) {
 		this.server = source;
-		transmit(new ReNameEvent(this.clientID, ID_ALL, "Hans Dampf"));
+		transmit(new ReNameEvent(this.clientID, ID_ALL, this.txtName.getText()));
+		this.txtName.setEditable(false);
 		this.setTitle("Verbunden");
 		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
-		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"
-				+ date + "</i></td>");
+//		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"
+//				+ date + "</i></td>");
 		this.txtInput.setEditable(true);
 		this.btnSend.setEnabled(true);
 		this.btnSend.setEnabled(true);
-		// transmit(new ReNameEvent(-55242542, ID_ALL, "Hans Peter"));
 	}
 
 	@Override
@@ -243,9 +248,11 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
 
 		this.server = null; // let gc do its job
+		this.clientID = 0;
 		this.model.clear();
 		this.txtInput.setEditable(false);
 		this.btnSend.setEnabled(false);
+		this.txtName.setEditable(true);
 	}
 
 	private void transmit(MessageEvent dataPacket) {
@@ -279,7 +286,6 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -289,17 +295,13 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 }

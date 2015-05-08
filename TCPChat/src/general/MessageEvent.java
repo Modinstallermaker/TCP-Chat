@@ -3,6 +3,7 @@ package general;
 import java.io.Serializable;
 
 public abstract class MessageEvent implements Serializable {
+	private static final long serialVersionUID = -4372367554149485322L;
 	/**
 	 * The network global ID of sender of this data pack which is set by MultiClientServer
 	 */
