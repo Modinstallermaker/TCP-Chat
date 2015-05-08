@@ -214,6 +214,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	private String clientNameOf(int senderID) {
 		for (ReNameEvent reNameEvent : this.clientNames) {
+			System.out.println("ClientName: " + reNameEvent.getName());
 			if (reNameEvent.getSenderID() == senderID) {
 				return reNameEvent.getName();
 			}
