@@ -1,6 +1,6 @@
 package pck.client;
 
-import static pck.ChatProtocoll.*;
+import static pck.ChatProtocoll.ID_ALL;
 import general.ClientPlugin;
 import general.CommChannel;
 import general.MessageEvent;
@@ -20,7 +20,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -63,7 +62,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	private final HTMLDocument doc = new HTMLDocument();
 	private String Outputtext = "<td colspan=3><b>Herzlich Willommen im Chat!</b><br></td>";
 	boolean scrollDown = false;
-	private final List<ReNameEvent> clientNames = new ArrayList<>();
+	private ArrayList<ReNameEvent> clientNames = new ArrayList<ReNameEvent>();
 
 	public ChatClientGUI() {
 		super("Nicht verbunden");
@@ -180,13 +179,14 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
-			if (!this.clientNames.contains(e)) { // new join of somebody
-				final ReNameEvent rne = (ReNameEvent) e;
+			if (!this.clientNames.contains(e)) { // new join of somebody				
 				this.model.addElement(rnE.getName());
-				this.clientNames.add(rne);
-				append(rne.getName()+ " ist dem Chat beigetreten", "System");
+				e.setSenderID(senderID);
+				this.clientNames.add((ReNameEvent) e);
+				append(rnE.getName()+ " ist dem Chat beigetreten", "System");
 			} 
-		} else if (e instanceof ExitEvent) {  // members leaves chat 				
+		} else if (e instanceof ExitEvent) {  // members leaves chat 		
+			
 			append("Client "+((ExitEvent) e).getExiterID()+ " hat den Chat verlassen", "System");			
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
@@ -194,24 +194,22 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	private String clientNameOf(int senderID) {
-		if(senderID==clientID)
-			return "Du";
-		else
-		{
-			for (ReNameEvent e : this.clientNames) {
-				append(String.valueOf(e.getSenderID()), "System");
-				if (e.getSenderID() == senderID) {
-					return e.getName();
-				}			
-			}
-			return "Client "+String.valueOf(senderID);
+		for (ReNameEvent e : this.clientNames) {
+			System.out.println(e.getName()+" "+ e.getSenderID()); //e.getSenderID() ist immer 0!!!
+			if (e.getSenderID() == senderID) {
+				return e.getName();
+			}			
 		}
+		if(senderID==clientID)
+			return "Sie";
+		else
+			return "Client "+String.valueOf(senderID);
 	}
 
 	@Override
 	public void connected(CommChannel source) {
 		this.server = source;
-		transmit(new ReNameEvent(this.clientID, ID_ALL, this.txtName.getText()));
+		transmit(new ReNameEvent(server.getId(), ID_ALL, this.txtName.getText()));
 		this.txtName.setEditable(false);
 		this.setTitle("Verbunden");	
 		this.txtInput.setEditable(true);

@@ -139,10 +139,8 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 			public void run() {
 				try {
 					while (MultiClientServer.this.connectionActive) {
-
 						final Socket s = MultiClientServer.this.ss.accept();
-						new CommChannel(s, MultiClientServer.this);
-
+						new CommChannel(s, MultiClientServer.this);						
 					}
 				} catch (SocketException e) {
 					// ServerSocket wurde geschlossen

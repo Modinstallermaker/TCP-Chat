@@ -48,19 +48,8 @@ public class CommChannel implements Runnable {
 	 * @param id
 	 * @param msg
 	 */
-	// public boolean sendMessageIfIDIs(int id, String msg) {
-	// if (id == this.id) {
-	// sendMessage(msg);
-	// return true;
-	// }
-	// if (id < 0) {
-	// sendMessage(msg);
-	// }
-	// return false;
-	// }
 
 	public void disconnect() throws IOException {
-		// shutdown = true;
 		this.socket.close();
 	}
 

@@ -7,11 +7,11 @@ public abstract class MessageEvent implements Serializable {
 	/**
 	 * The network global ID of sender of this data pack which is set by MultiClientServer
 	 */
-	private final int senderID;
+	private int senderID;
 	/**
 	 * The network global ID of receiver this data pack which is set by MultiClientServer
 	 */
-	private final int receiverID;
+	private int receiverID;
 	
 	
 	protected MessageEvent(int senderID, int receiverID) {
@@ -24,6 +24,10 @@ public abstract class MessageEvent implements Serializable {
 	public int getSenderID() {
 		return this.senderID;
 	}
+	
+	public void setSenderID(int id) {
+		this.senderID =id;
+	}	
 
 
 	public int getReceiverID() {
