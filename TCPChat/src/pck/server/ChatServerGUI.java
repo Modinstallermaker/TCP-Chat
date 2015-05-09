@@ -32,7 +32,7 @@ public class ChatServerGUI implements Receiver {
 				throw new UnsupportedOperationException();
 			}
 		} else if (e instanceof ExitEvent) {
-			throw new UnsupportedOperationException("Not impled yet");
+			broadcast(e);
 		}
 
 		else if (e instanceof ReNameEvent) {

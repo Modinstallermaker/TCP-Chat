@@ -1,7 +1,6 @@
 package pck.client;
 
 import static pck.ChatProtocoll.*;
-
 import general.ClientPlugin;
 import general.CommChannel;
 import general.MessageEvent;
@@ -145,7 +144,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		if(source.equals("System"))
 			writer("<td colspan='3' valign='top'><i>"+text+"</i></td>");
 		else
-			writer("<td  valign='top' width='15%'><b>"+source+"</b></td><td width='75%'>"+text+"</td><td align='right' width=width='8%'><i>"+time+"</i></td>");
+			writer("<td  valign='top' width='15%'><b>"+source+"</b></td><td width='75%'>"+text+"</td><td align='right' width='8%'><i>"+time+"</i></td>");
 	}
 
 	@Override
@@ -187,15 +186,8 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 				this.clientNames.add(rne);
 				append(rne.getName()+ " ist dem Chat beigetreten", "System");
 			} 
-		} else if (e instanceof ExitEvent) {  // members leaves chat 	
-			final ExitEvent exE = (ExitEvent) e;
-			if (this.clientNames.contains(e)) { 		
-				final ReNameEvent rne = (ReNameEvent) e;
-				this.model.removeElement(rne.getName());
-				this.clientNames.remove(exE);
-				append(rne.getName()+ " hat den Chat verlassen", "System");
-			} 
-			
+		} else if (e instanceof ExitEvent) {  // members leaves chat 				
+			append("Client "+((ExitEvent) e).getExiterID()+ " hat den Chat verlassen", "System");			
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
 		}
@@ -207,12 +199,12 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		else
 		{
 			for (ReNameEvent e : this.clientNames) {
-				//System.out.println("ClientName: " + reNameEvent.getName()+", "+senderID+":"+reNameEvent.getSenderID());				
+				append(String.valueOf(e.getSenderID()), "System");
 				if (e.getSenderID() == senderID) {
 					return e.getName();
 				}			
 			}
-			return "Unbekannt";
+			return "Client "+String.valueOf(senderID);
 		}
 	}
 
@@ -228,7 +220,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	@Override
-	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
+	public void disconnected(CommChannel source, boolean causedByOtherEnd) {		
 		if (causedByOtherEnd) {
 			append("Die Serververbindung wurde unterbrochen...", "System");
 		} else {

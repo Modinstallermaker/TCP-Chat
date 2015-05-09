@@ -2,6 +2,7 @@ package general;
 
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static pck.ChatProtocoll.ID_ALL;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -16,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import pck.ExitEvent;
 import layout.TableLayout;
 
 public class ClientPlugin extends Container implements ActionListener, Receiver {
@@ -38,20 +40,10 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		this.receiver = receiver;
 		this.parent = parent;
 		this.btnConnect.addActionListener(this);
-		// this.txtIP.setColumns(10);
-		// this.txtPort.setColumns(3);
+		
 		final double txtf_Height = 20, lblHeight = 20, btnHeight = 30, gap = 10;
 		double[] columns = { gap, 0.6, gap, 0.4, gap };
-		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap,
-				lblHeight };
-
-		// for (double d : columns) {
-		// val += d;
-		// }
-		//
-		// for (int i = 0; i < columns.length; i++) {
-		// columns[i] /= val;
-		// }
+		double[] rows = { gap, lblHeight, 0, txtf_Height, gap, btnHeight, gap, lblHeight };
 
 		setLayout(new TableLayout(new double[][] { columns, rows }));
 		add(this.lblIPAdress, "1, 1");
@@ -59,11 +51,8 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 		add(this.txtIP, "1, 3");
 		add(this.txtPort, "3, 3");
 		add(this.btnConnect, "1,5, 3, 5");
-		this.lblStatus.setFont(new Font(this.lblStatus.getFont().getFontName(),
-				Font.BOLD, 16));
+		this.lblStatus.setFont(new Font(this.lblStatus.getFont().getFontName(),	Font.BOLD, 15));
 		add(this.lblStatus, "1, 7");
-		// setMinimumSize(getPreferredSize());
-		// setMinimumSize(new Dimension(100, 200));
 		setVisible(true);
 	}
 
@@ -79,8 +68,6 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 			this.connectionActive = true;
 			this.btnConnect.setText("Verbindung trennen");
 			this.lblStatus.setText("Online");
-			// muss weg, woher kennt der client den server???
-			// server.transmit(startDataPack(clientID));
 		} catch (IOException e) {
 			showMessageDialog(
 					this.parent,
@@ -94,8 +81,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	}
 
 	private void disconnectMannually() {
-		// muss weg, woher kennt der client den server???
-		// server.transmit(exitDataPack(clientID));
+		server.transmit(new ExitEvent(ID_ALL, server.getId(), false));
 		try {
 			this.server.disconnect();
 		} catch (IOException e) {
@@ -138,7 +124,7 @@ public class ClientPlugin extends Container implements ActionListener, Receiver 
 	}
 
 	@Override
-	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
+	public void disconnected(CommChannel source, boolean causedByOtherEnd) {		
 		setDisconnectedProperties();
 		this.receiver.disconnected(source, causedByOtherEnd);
 	}
