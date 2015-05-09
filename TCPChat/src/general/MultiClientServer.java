@@ -23,8 +23,7 @@ import javax.swing.JTextField;
 
 import layout.TableLayout;
 
-public class MultiClientServer extends JFrame implements ActionListener,
-		Receiver {
+public class MultiClientServer extends JFrame implements ActionListener, Receiver {
 	/**
 	 * 
 	 */

@@ -1,6 +1,7 @@
 package pck.client;
 
-import static pck.ChatProtocoll.ID_ALL;
+import static pck.ChatProtocoll.*;
+
 import general.ClientPlugin;
 import general.CommChannel;
 import general.MessageEvent;
