@@ -24,10 +24,6 @@ public abstract class MessageEvent implements Serializable {
 	public int getSenderID() {
 		return this.senderID;
 	}
-	
-	public void setSenderID(int id) {
-		this.senderID =id;
-	}	
 
 
 	public int getReceiverID() {

@@ -179,37 +179,44 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
-			if (!this.clientNames.contains(e)) { // new join of somebody				
-				this.model.addElement(rnE.getName());
-				e.setSenderID(senderID);
-				this.clientNames.add((ReNameEvent) e);
+			if (!this.clientNames.contains(e)) { // new join of somebody		
+				this.clientNames.add((ReNameEvent) e);				
+				this.model.addElement(rnE.getName());				
+				
 				append(rnE.getName()+ " ist dem Chat beigetreten", "System");
 			} 
-		} else if (e instanceof ExitEvent) {  // members leaves chat 		
-			
-			append("Client "+((ExitEvent) e).getExiterID()+ " hat den Chat verlassen", "System");			
+		} else if (e instanceof ExitEvent) {  // members leaves chat 				
+			for (ReNameEvent ev : this.clientNames) {
+				if(ev.getSenderID()==e.getReceiverID()){
+					append(ev.getName()+ " hat den Chat verlassen", "System");
+					model.removeElement(ev.getName());
+					clientNames.remove(ev);
+				}
+			}
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
+			transmit(new ReNameEvent(this.clientID, ID_ALL, this.txtName.getText()));
 		}
 	}
 
 	private String clientNameOf(int senderID) {
-		for (ReNameEvent e : this.clientNames) {
-			System.out.println(e.getName()+" "+ e.getSenderID()); //e.getSenderID() ist immer 0!!!
-			if (e.getSenderID() == senderID) {
-				return e.getName();
-			}			
-		}
 		if(senderID==clientID)
 			return "Sie";
 		else
+		{
+			for (ReNameEvent e : this.clientNames) {
+				System.out.println(e.getName()+" "+ e.getSenderID()); 
+				if (e.getSenderID() == senderID) {
+					return e.getName();
+				}				
+			}
 			return "Client "+String.valueOf(senderID);
+		}
 	}
 
 	@Override
 	public void connected(CommChannel source) {
-		this.server = source;
-		transmit(new ReNameEvent(server.getId(), ID_ALL, this.txtName.getText()));
+		this.server = source;		
 		this.txtName.setEditable(false);
 		this.setTitle("Verbunden");	
 		this.txtInput.setEditable(true);
