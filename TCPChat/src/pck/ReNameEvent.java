@@ -3,6 +3,10 @@ package pck;
 import general.MessageEvent;
 
 public class ReNameEvent extends MessageEvent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3021190636770356284L;
 	private final String name;
 
 	public ReNameEvent(int senderID, int receiverID, String name) {

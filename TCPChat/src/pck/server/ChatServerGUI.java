@@ -1,6 +1,6 @@
 package pck.server;
 
-import static pck.ChatProtocoll.*;
+import static pck.ChatProtocoll.ID_ALL;
 import general.CommChannel;
 import general.MessageEvent;
 import general.MultiClientServer;
@@ -8,19 +8,12 @@ import general.Receiver;
 
 import java.util.List;
 
-import pck.ChatProtocoll;
 import pck.ExitEvent;
 import pck.ReNameEvent;
 import pck.TellIDEvent;
 import pck.TextMessageEvent;
 
 public class ChatServerGUI implements Receiver {
-
-	// Messages have following structure:
-	// Client ---> Server:
-	// "receiverID:::senderID:::command:::content"
-	// Server ---> Client:
-	// "sender:::command:::content"
 
 	private final List<CommChannel> clientList;
 
@@ -57,14 +50,6 @@ public class ChatServerGUI implements Receiver {
 			}
 		}
 	}
-
-	// private void broadcastExcept(String msg, String id) {
-	//
-	// for (Server client : clientList) {
-	// if(Integer.parseInt(id)!=client.getId())
-	// client.transmit(msg);
-	// }
-	// }
 
 	@Override
 	public void connected(CommChannel source) {

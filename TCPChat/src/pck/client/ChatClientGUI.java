@@ -1,15 +1,13 @@
 package pck.client;
 
-import static pck.ChatProtocoll.*;
+import static pck.ChatProtocoll.ID_ALL;
 import general.ClientPlugin;
 import general.CommChannel;
-import general.Receiver;
 import general.MessageEvent;
+import general.Receiver;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -18,7 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.SimpleDateFormat;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,14 +36,12 @@ import javax.swing.JTextField;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import pck.ChatProtocoll;
 import pck.ExitEvent;
 import pck.ReNameEvent;
 import pck.TellIDEvent;
 import pck.TextMessageEvent;
 
-public class ChatClientGUI extends JFrame implements ActionListener,
-		KeyListener, Receiver, MouseListener {
+public class ChatClientGUI extends JFrame implements ActionListener, KeyListener, Receiver, MouseListener, WindowListener {
 	/**
 	 * 
 	 */
@@ -54,8 +51,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	// Components
 	private final ClientPlugin clientPP;
-	private final JButton btnClear = new JButton(
-			"<html><body>Verlauf<br>l\u00F6schen</body></html>");
+	private final JButton btnClear = new JButton("<html><body>Verlauf<br>l\u00F6schen</body></html>");
 	private DefaultListModel<String> model = new DefaultListModel<>();
 	private final JList<String> listMembers = new JList<>(this.model);
 	private final JEditorPane txtOutput = new JEditorPane("text/html", null);
@@ -84,8 +80,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		this.txtName.setPreferredSize(this.txtName.getSize());
 
 		memberPane.add(new JScrollPane(this.listMembers), BorderLayout.SOUTH);
-		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				this.clientPP, memberPane);
+		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.clientPP, memberPane);
 
 		this.txtOutput.setEditable(false);
 		this.txtOutput.setDocument(this.doc);
@@ -113,23 +108,21 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		contBottom.add(new JScrollPane(this.txtInput), BorderLayout.CENTER);
 		contBottom.add(contButtons, BorderLayout.EAST);
 
-		JSplitPane contentRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				true, scrollPaneTextOut, contBottom);
+		JSplitPane contentRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 	true, scrollPaneTextOut, contBottom);
 		contentRight.setResizeWeight(0.95);
 		contentRight.setDividerLocation(0.5);
 
-		JSplitPane splitPaneContent = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
+		JSplitPane splitPaneContent = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
 
 		add(splitPaneContent);
 		this.txtInput.addKeyListener(this);
 		this.btnSend.addActionListener(this);
 		this.btnClear.addActionListener(this);
 
-		append("<td colspan=3><i>Bitte klicken Sie links oben auf \"Verbinden\"...</i></td>");
+		append("Bitte klicken Sie links oben auf \"Verbinden\"...", "System");
 
 		setSize(700, 800);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		addWindowListener(this);
 		setVisible(true);
 
 		pack();
@@ -138,14 +131,20 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		this.btnSend.setEnabled(false);
 	}
 
-	public void append(String s) {
+	public void writer(String s) {
 		this.Outputtext += "<tr>" + s + "</tr>";
-		this.txtOutput.setText("<html><body><table width='100%'>"
-				+ this.Outputtext + "</table></body></html>");
+		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext + "</table></body></html>");
 		this.scrollDown = true;
-		this.txtOutput.setText("<html><body><table width='100%'>"
-				+ this.Outputtext + "</table></body></html>");
-		this.scrollDown = true;
+	}
+	public void append(String text, String source)
+	{
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
+		String time = sdf.format(new Date());
+		
+		if(source.equals("System"))
+			writer("<td colspan='3' valign='top'><i>"+text+"</i></td>");
+		else
+			writer("<td  valign='top' width='15%'><b>"+source+"</b></td><td width='75%'>"+text+"</td><td align='right' width=width='8%'><i>"+time+"</i></td>");
 	}
 
 	@Override
@@ -155,7 +154,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			senden();
 		} else if (src == this.btnClear) {
 			this.Outputtext = " ";
-			append("<td colspan=3><i>Konsole wurde gel\u00fcscht...</i></td>");
+			append("Konsole wurde gel\u00fcscht...", "System");
 		}
 	}
 
@@ -169,58 +168,51 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 	@Override
 	public void receiveNextMessage(MessageEvent e, CommChannel source) {
-		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
-				"HH:mm:ss");
-		String date = sdf.format(new Date());
+		
 		System.out.println(e.getClass().getName());
 		int senderID = e.getSenderID();
-		int receiverID = e.getReceiverID();
+		//int receiverID = e.getReceiverID();
 
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
 			String content = txtME.getText();
-			append("<td valign='top' width='15%'><b>" + clientNameOf(senderID)
-					+ ": </b></td><td width='85%'>" + content + "</td><td><i>"
-					+ date + "</i></td>");
+			append(content, clientNameOf(senderID));
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
 			if (!this.clientNames.contains(e)) { // new join of somebody
 				final ReNameEvent rne = (ReNameEvent) e;
 				this.model.addElement(rnE.getName());
-
 				this.clientNames.add(rne);
-				append("<td valign='top' width='15%'><b>" + rne.getName()
-						+ ": </b></td><td width='85%'>"
-						+ " ist dem Chat beigetreten" + "</td><td><i>" + date
-						+ "</i></td>");
-			} else { // name change
-				// not necessary yet
-			}
-
-		} else if (e instanceof ExitEvent) {
+				append(rne.getName()+ " ist dem Chat beigetreten", "System");
+			} 
+		} else if (e instanceof ExitEvent) {  // members leaves chat 	
 			final ExitEvent exE = (ExitEvent) e;
-			// String exiter = clientNames.exE.getExiterID();// clientName with
-			// id
-			// model.removeElement(exiter);
-			// append("<td valign='top' width='15%'><b>" + sender
-			// + ": </b></td><td width='85%'>" + exiter
-			// + " hat den Chat verlassen" + "</td><td><i>" + date
-			// + "</i></td>");
+			if (this.clientNames.contains(e)) { 		
+				final ReNameEvent rne = (ReNameEvent) e;
+				this.model.removeElement(rne.getName());
+				this.clientNames.remove(exE);
+				append(rne.getName()+ " hat den Chat verlassen", "System");
+			} 
+			
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
 		}
 	}
 
 	private String clientNameOf(int senderID) {
-		for (ReNameEvent reNameEvent : this.clientNames) {
-			System.out.println("ClientName: " + reNameEvent.getName());
-			if (reNameEvent.getSenderID() == senderID) {
-				return reNameEvent.getName();
+		if(senderID==clientID)
+			return "Du";
+		else
+		{
+			for (ReNameEvent e : this.clientNames) {
+				//System.out.println("ClientName: " + reNameEvent.getName()+", "+senderID+":"+reNameEvent.getSenderID());				
+				if (e.getSenderID() == senderID) {
+					return e.getName();
+				}			
 			}
+			return "Unbekannt";
 		}
-		throw new RuntimeException("Name not found");
-
 	}
 
 	@Override
@@ -228,10 +220,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		this.server = source;
 		transmit(new ReNameEvent(this.clientID, ID_ALL, this.txtName.getText()));
 		this.txtName.setEditable(false);
-		this.setTitle("Verbunden");
-		String date = new SimpleDateFormat("HH:mm:ss").format(new Date());
-//		append("<td valign='top' colspan=2><b>Sie wurden mit dem Server verbunden</b></td><td><i>"
-//				+ date + "</i></td>");
+		this.setTitle("Verbunden");	
 		this.txtInput.setEditable(true);
 		this.btnSend.setEnabled(true);
 		this.btnSend.setEnabled(true);
@@ -240,11 +229,11 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		if (causedByOtherEnd) {
-			append("<td colspan=3><i><b>Die Serververbindung wurde unterbrochen...</b></i></td>");
+			append("Die Serververbindung wurde unterbrochen...", "System");
 		} else {
-			append("<td colspan=3><i><b>Sie haben sich vom Chat abgemeldet...</b></i></td>");
+			append("Sie haben sich vom Chat abgemeldet...", "System");
 		}
-		append("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
+		writer("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
 				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
 				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
 
@@ -305,4 +294,37 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void mouseReleased(MouseEvent e) {
 	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		try {
+			server.disconnect();
+		} catch (Exception ex) {
+		}
+		System.exit(0);
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+	}	
 }

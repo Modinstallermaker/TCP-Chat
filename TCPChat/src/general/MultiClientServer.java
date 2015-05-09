@@ -13,17 +13,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.text.NumberFormatter;
 
 import layout.TableLayout;
 
@@ -87,7 +83,6 @@ public class MultiClientServer extends JFrame implements ActionListener,
 		cont.add(this.btnServer, "5, 2");
 		cont.add(this.lblStatus, "1, 4, 5, 4");
 		setContentPane(cont);
-		// setLocationRelativeTo(null);
 		setLocation(800, 400);
 		setVisible(true);
 		pack();
@@ -215,8 +210,7 @@ public class MultiClientServer extends JFrame implements ActionListener,
 		synchronized (this.clientList) {
 			for (CommChannel conn : this.clientList) {
 				conn.disconnect();
-			}
-			//		this.clientList.clear();
+			}			
 		}
 	}
 
