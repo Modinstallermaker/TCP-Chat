@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -65,7 +66,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	private final HTMLDocument doc = new HTMLDocument();
 	private String outputText = "<td colspan=3><b>Herzlich Willommen im Chat!</b><br></td>";
 	boolean scrollDown = false;
-	private ArrayList<ReNameEvent> clientNames = new ArrayList<ReNameEvent>();
+	private final ArrayList<ReNameEvent> clientNames = new ArrayList<ReNameEvent>();
 
 	public ChatClientGUI() {
 		super("Nicht verbunden");
@@ -124,7 +125,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		this.btnSend.addActionListener(this);
 		this.btnClear.addActionListener(this);
 
-		append("Bitte klicken Sie links oben auf \"Verbinden\"...", "System");
+		append("Bitte klicken Sie links oben auf \"Verbinden\"...", null);
 
 		setSize(700, 800);
 		addWindowListener(this);
@@ -148,11 +149,11 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				"HH:mm:ss");
 		String time = sdf.format(new Date());
 
-		if (source.equals("System"))
+		if (source == null)
 			writer("<td colspan='3' valign='top'><i>" + text + "</i></td>");
 		else
 			writer("<td  valign='top' width='15%'><b>" + source
-					+ "</b></td><td width='75%'>" + text
+					+ ":</b></td><td width='75%'>" + text
 					+ "</td><td align='right' width='8%'><i>" + time
 					+ "</i></td>");
 	}
@@ -164,7 +165,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			senden();
 		} else if (src == this.btnClear) {
 			this.outputText = " ";
-			append("Konsole wurde gel\u00fcscht...", "System");
+			append("Konsole wurde gel\u00fcscht...", null);
 		}
 	}
 
@@ -194,12 +195,12 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				this.clientNames.add((ReNameEvent) e);
 				this.model.addElement(rnE.getName());
 
-				append(rnE.getName() + " ist dem Chat beigetreten", "System");
+				append(rnE.getName() + " ist dem Chat beigetreten", null);
 			}
 		} else if (e instanceof ExitEvent) { // members leaves chat
 			for (ReNameEvent ev : this.clientNames) {
 				if (ev.getSenderID() == e.getReceiverID()) {
-					append(ev.getName() + " hat den Chat verlassen", "System");
+					append(ev.getName() + " hat den Chat verlassen", null);
 					model.removeElement(ev.getName());
 					clientNames.remove(ev);
 				}
@@ -216,17 +217,14 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	}
 
 	private String clientNameOf(int senderID) {
-		if (senderID == clientID)
-			return "Sie";
-		else {
-			for (ReNameEvent e : this.clientNames) {
-				System.out.println(e.getName() + " " + e.getSenderID());
-				if (e.getSenderID() == senderID) {
-					return e.getName();
-				}
+
+		for (ReNameEvent e : this.clientNames) {
+			System.out.println(e.getName() + " " + e.getSenderID());
+			if (e.getSenderID() == senderID) {
+				return e.getName();
 			}
-			return "Client " + String.valueOf(senderID);
 		}
+		throw new IllegalArgumentException("No such client found");
 	}
 
 	@Override
@@ -238,9 +236,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	@Override
 	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		if (causedByOtherEnd) {
-			append("Die Serververbindung wurde unterbrochen...", "System");
+			append("Die Serververbindung wurde unterbrochen...", null);
 		} else {
-			append("Sie haben sich vom Chat abgemeldet...", "System");
+			append("Sie haben sich vom Chat abgemeldet...", null);
 		}
 		writer("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
 				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
@@ -312,7 +310,8 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	public void windowClosing(WindowEvent e) {
 		try {
 			server.disconnect();
-		} catch (Exception ex) {
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 		System.exit(0);
 	}
