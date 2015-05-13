@@ -137,7 +137,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		this.btnSend.setEnabled(false);
 	}
 
-	public void writer(String s) {
+	public void write(String s) {
 		this.outputText += "<tr>" + s + "</tr>";
 		this.txtOutput.setText("<html><body><table width='100%'>"
 				+ this.outputText + "</table></body></html>");
@@ -150,9 +150,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		String time = sdf.format(new Date());
 
 		if (source == null)
-			writer("<td colspan='3' valign='top'><i>" + text + "</i></td>");
+			write("<td colspan='3' valign='top'><i>" + text + "</i></td>");
 		else
-			writer("<td  valign='top' width='15%'><b>" + source
+			write("<td  valign='top' width='15%'><b>" + source
 					+ "</b></td><td width='75%'>" + text
 					+ "</td><td align='right' width='8%'><i>" + time
 					+ "</i></td>");
@@ -162,14 +162,14 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
 		if (src == this.btnSend) {
-			senden();
+			sendMSG();
 		} else if (src == this.btnClear) {
 			this.outputText = " ";
 			append("Konsole wurde gel\u00fcscht...", null);
 		}
 	}
 
-	public void senden() {
+	public void sendMSG() {
 		String neu = this.txtInput.getText().trim();
 		if (neu.length() > 0) {
 			sendBroadcastTextMessage(neu);
@@ -195,7 +195,8 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				this.clientNames.add((ReNameEvent) e);
 				this.model.addElement(rnE.getName());
 
-				append(" ist dem Chat beigetreten", rnE.getName());
+				append("<b>" + rnE.getName() + "</b> ist dem Chat beigetreten",
+						null);
 			}
 		} else if (e instanceof ExitEvent) { // members leaves chat
 			for (ReNameEvent ev : this.clientNames) {
@@ -241,7 +242,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		} else {
 			append("Sie haben sich vom Chat abgemeldet...", null);
 		}
-		writer("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
+		write("<td colspan=3><b>Vielen Dank f\u00fcr die Nutzung des Chat Programms!</b><br><br>"
 				+ "<i>Sie sind nun NICHT mehr beim Server angemeldet!<br>"
 				+ "Zum erneuten Verbindunsgsaufbau bitte oben links auf \"Verbinden\" klicken...</i></td>");
 
@@ -273,7 +274,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			if (e.isShiftDown() && key == KeyEvent.VK_ENTER) {
 				this.txtInput.append(System.getProperty("line.separator"));
 			} else if (key == KeyEvent.VK_ENTER) {
-				senden();
+				sendMSG();
 			}
 		}
 	}
@@ -313,8 +314,9 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			server.disconnect();
 		} catch (IOException ex) {
 			ex.printStackTrace();
+		} finally {
+			System.exit(0);
 		}
-		System.exit(0);
 	}
 
 	@Override
