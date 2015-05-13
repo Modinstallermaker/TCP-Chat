@@ -153,7 +153,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 			writer("<td colspan='3' valign='top'><i>" + text + "</i></td>");
 		else
 			writer("<td  valign='top' width='15%'><b>" + source
-					+ ":</b></td><td width='75%'>" + text
+					+ "</b></td><td width='75%'>" + text
 					+ "</td><td align='right' width='8%'><i>" + time
 					+ "</i></td>");
 	}
@@ -195,7 +195,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				this.clientNames.add((ReNameEvent) e);
 				this.model.addElement(rnE.getName());
 
-				append(rnE.getName() + " ist dem Chat beigetreten", null);
+				append(" ist dem Chat beigetreten", rnE.getName());
 			}
 		} else if (e instanceof ExitEvent) { // members leaves chat
 			for (ReNameEvent ev : this.clientNames) {
@@ -224,7 +224,8 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 				return e.getName();
 			}
 		}
-		throw new IllegalArgumentException("No such client found");
+		throw new IllegalArgumentException("No such client found, senderID: "
+				+ senderID);
 	}
 
 	@Override

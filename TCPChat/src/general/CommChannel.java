@@ -16,18 +16,12 @@ public class CommChannel implements Runnable {
 	private final ObjectInputStream in;
 	private final Receiver receiver;
 
-	// private final Scanner inputScanner;
-
-	// private boolean shutdown = false;
-
 	public CommChannel(Socket socket, Receiver receiver) throws IOException {
 		this.id = ++counter;
 		this.socket = socket;
 		this.receiver = receiver;
 		this.out = new ObjectOutputStream(socket.getOutputStream());
 		this.in = new ObjectInputStream(socket.getInputStream());
-		// this.inputScanner = new Scanner(in);
-		// inputScanner.useDelimiter(Protocoll.DATA_PACK_END);
 		new Thread(this, "Channel-" + this.id).start();
 
 	}
@@ -41,13 +35,7 @@ public class CommChannel implements Runnable {
 		}
 	}
 
-	/**
-	 * sends a message if the param id is equal to the intern id or if the id is
-	 * zero
-	 * 
-	 * @param id
-	 * @param msg
-	 */
+
 
 	public void disconnect() throws IOException {
 		this.socket.close();
@@ -72,8 +60,10 @@ public class CommChannel implements Runnable {
 			e.printStackTrace();
 		} catch (SocketException e) { // own socket closed
 			causedByOtherEnd = false;
+			e.printStackTrace();
 		} catch (EOFException e) { // end of stream, connection interrupted
 			causedByOtherEnd = true;
+			e.printStackTrace();
 		}
 		catch (IOException e) {
 			// shouldn't happen
