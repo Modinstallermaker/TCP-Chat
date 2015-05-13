@@ -182,8 +182,6 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		System.out.println(e.getClass().getName());
 		int senderID = e.getSenderID();
-		// int receiverID = e.getReceiverID();
-
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
 			String content = txtME.getText();
