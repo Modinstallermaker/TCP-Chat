@@ -40,7 +40,8 @@ import pck.ReNameEvent;
 import pck.TellIDEvent;
 import pck.TextMessageEvent;
 
-public class ChatClientGUI extends JFrame implements ActionListener, KeyListener, Receiver, MouseListener, WindowListener {
+public class ChatClientGUI extends JFrame implements ActionListener,
+		KeyListener, Receiver, MouseListener, WindowListener {
 	/**
 	 * 
 	 */
@@ -50,17 +51,19 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	// Components
 	private final ClientPlugin clientPP;
-	private final JButton btnClear = new JButton("<html><body>Verlauf<br>l\u00F6schen</body></html>");
+	private final JButton btnClear = new JButton(
+			"<html><body>Verlauf<br>l\u00F6schen</body></html>");
 	private DefaultListModel<String> model = new DefaultListModel<>();
 	private final JList<String> listMembers = new JList<>(this.model);
 	private final JEditorPane txtOutput = new JEditorPane("text/html", null);
 	private final JTextArea txtInput = new JTextArea();
 	private final JLabel lblName = new JLabel("Name: ");
-	private final JTextField txtName = new JTextField(System.getProperty("user.name"));
+	private final JTextField txtName = new JTextField(
+			System.getProperty("user.name"));
 	private final JButton btnSend = new JButton("Senden");
 	private final HTMLEditorKit kit = new HTMLEditorKit();
 	private final HTMLDocument doc = new HTMLDocument();
-	private String Outputtext = "<td colspan=3><b>Herzlich Willommen im Chat!</b><br></td>";
+	private String outputText = "<td colspan=3><b>Herzlich Willommen im Chat!</b><br></td>";
 	boolean scrollDown = false;
 	private ArrayList<ReNameEvent> clientNames = new ArrayList<ReNameEvent>();
 
@@ -71,7 +74,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	protected void buildGUI() {
-		
+
 		Container memberPane = new Container();
 		memberPane.setLayout(new BorderLayout());
 		memberPane.add(this.txtName, BorderLayout.CENTER);
@@ -79,7 +82,8 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		this.txtName.setPreferredSize(this.txtName.getSize());
 
 		memberPane.add(new JScrollPane(this.listMembers), BorderLayout.SOUTH);
-		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.clientPP, memberPane);
+		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				this.clientPP, memberPane);
 
 		this.txtOutput.setEditable(false);
 		this.txtOutput.setDocument(this.doc);
@@ -107,11 +111,13 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		contBottom.add(new JScrollPane(this.txtInput), BorderLayout.CENTER);
 		contBottom.add(contButtons, BorderLayout.EAST);
 
-		JSplitPane contentRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 	true, scrollPaneTextOut, contBottom);
+		JSplitPane contentRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				true, scrollPaneTextOut, contBottom);
 		contentRight.setResizeWeight(0.95);
 		contentRight.setDividerLocation(0.5);
 
-		JSplitPane splitPaneContent = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
+		JSplitPane splitPaneContent = new JSplitPane(
+				JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
 
 		add(splitPaneContent);
 		this.txtInput.addKeyListener(this);
@@ -131,19 +137,24 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	public void writer(String s) {
-		this.Outputtext += "<tr>" + s + "</tr>";
-		this.txtOutput.setText("<html><body><table width='100%'>" + this.Outputtext + "</table></body></html>");
+		this.outputText += "<tr>" + s + "</tr>";
+		this.txtOutput.setText("<html><body><table width='100%'>"
+				+ this.outputText + "</table></body></html>");
 		this.scrollDown = true;
 	}
-	public void append(String text, String source)
-	{
-		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
+
+	public void append(String text, String source) {
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+				"HH:mm:ss");
 		String time = sdf.format(new Date());
-		
-		if(source.equals("System"))
-			writer("<td colspan='3' valign='top'><i>"+text+"</i></td>");
+
+		if (source.equals("System"))
+			writer("<td colspan='3' valign='top'><i>" + text + "</i></td>");
 		else
-			writer("<td  valign='top' width='15%'><b>"+source+"</b></td><td width='75%'>"+text+"</td><td align='right' width='8%'><i>"+time+"</i></td>");
+			writer("<td  valign='top' width='15%'><b>" + source
+					+ "</b></td><td width='75%'>" + text
+					+ "</td><td align='right' width='8%'><i>" + time
+					+ "</i></td>");
 	}
 
 	@Override
@@ -152,7 +163,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 		if (src == this.btnSend) {
 			senden();
 		} else if (src == this.btnClear) {
-			this.Outputtext = " ";
+			this.outputText = " ";
 			append("Konsole wurde gel\u00fcscht...", "System");
 		}
 	}
@@ -167,10 +178,10 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void receiveNextMessage(MessageEvent e, CommChannel source) {
-		
+
 		System.out.println(e.getClass().getName());
 		int senderID = e.getSenderID();
-		//int receiverID = e.getReceiverID();
+		// int receiverID = e.getReceiverID();
 
 		if (e instanceof TextMessageEvent) {
 			final TextMessageEvent txtME = (TextMessageEvent) e;
@@ -179,53 +190,53 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 		} else if (e instanceof ReNameEvent) {
 			final ReNameEvent rnE = (ReNameEvent) e;
-			if (!this.clientNames.contains(e)) { // new join of somebody		
-				this.clientNames.add((ReNameEvent) e);				
-				this.model.addElement(rnE.getName());				
-				
-				append(rnE.getName()+ " ist dem Chat beigetreten", "System");
-			} 
-		} else if (e instanceof ExitEvent) {  // members leaves chat 				
+			if (!this.clientNames.contains(e)) { // new join of somebody
+				this.clientNames.add((ReNameEvent) e);
+				this.model.addElement(rnE.getName());
+
+				append(rnE.getName() + " ist dem Chat beigetreten", "System");
+			}
+		} else if (e instanceof ExitEvent) { // members leaves chat
 			for (ReNameEvent ev : this.clientNames) {
-				if(ev.getSenderID()==e.getReceiverID()){
-					append(ev.getName()+ " hat den Chat verlassen", "System");
+				if (ev.getSenderID() == e.getReceiverID()) {
+					append(ev.getName() + " hat den Chat verlassen", "System");
 					model.removeElement(ev.getName());
 					clientNames.remove(ev);
 				}
 			}
 		} else if (e instanceof TellIDEvent) {
 			this.clientID = e.getReceiverID(); // my own id
-			transmit(new ReNameEvent(this.clientID, ID_ALL, this.txtName.getText()));
+			transmit(new ReNameEvent(this.clientID, ID_ALL,
+					this.txtName.getText()));
+			this.txtName.setEditable(false);
+			this.txtInput.setEditable(true);
+			this.btnSend.setEnabled(true);
+			this.btnSend.setEnabled(true);
 		}
 	}
 
 	private String clientNameOf(int senderID) {
-		if(senderID==clientID)
+		if (senderID == clientID)
 			return "Sie";
-		else
-		{
+		else {
 			for (ReNameEvent e : this.clientNames) {
-				System.out.println(e.getName()+" "+ e.getSenderID()); 
+				System.out.println(e.getName() + " " + e.getSenderID());
 				if (e.getSenderID() == senderID) {
 					return e.getName();
-				}				
+				}
 			}
-			return "Client "+String.valueOf(senderID);
+			return "Client " + String.valueOf(senderID);
 		}
 	}
 
 	@Override
 	public void connected(CommChannel source) {
-		this.server = source;		
-		this.txtName.setEditable(false);
-		this.setTitle("Verbunden");	
-		this.txtInput.setEditable(true);
-		this.btnSend.setEnabled(true);
-		this.btnSend.setEnabled(true);
+		this.server = source;
+		this.setTitle("Verbunden");
 	}
 
 	@Override
-	public void disconnected(CommChannel source, boolean causedByOtherEnd) {		
+	public void disconnected(CommChannel source, boolean causedByOtherEnd) {
 		if (causedByOtherEnd) {
 			append("Die Serververbindung wurde unterbrochen...", "System");
 		} else {
@@ -315,7 +326,7 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 	}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {		
+	public void windowDeiconified(WindowEvent e) {
 	}
 
 	@Override
@@ -324,5 +335,5 @@ public class ChatClientGUI extends JFrame implements ActionListener, KeyListener
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
-	}	
+	}
 }
