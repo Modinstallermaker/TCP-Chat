@@ -58,7 +58,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 	private final JList<String> listMembers = new JList<>(this.model);
 	private final JEditorPane txtOutput = new JEditorPane("text/html", null);
 	private final JTextArea txtInput = new JTextArea();
-	private final JLabel lblName = new JLabel("Name: ");
+	private final JLabel lblName = new JLabel("Name eingeben: ");
 	private final JTextField txtName = new JTextField(
 			System.getProperty("user.name"));
 	private final JButton btnSend = new JButton("Senden");
@@ -78,13 +78,20 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 
 		Container memberPane = new Container();
 		memberPane.setLayout(new BorderLayout());
-		memberPane.add(this.txtName, BorderLayout.CENTER);
-		memberPane.add(this.lblName, BorderLayout.WEST);
-		this.txtName.setPreferredSize(this.txtName.getSize());
+//		memberPane.add(this.txtName, BorderLayout.CENTER);
+//		memberPane.add(this.lblName, BorderLayout.WEST);
+		Container cName = new Container();
+		cName.setLayout(new BorderLayout());
+		cName.add(lblName, BorderLayout.WEST);
+		cName.add(txtName, BorderLayout.CENTER);
+		memberPane.add(cName, BorderLayout.NORTH);
+//		this.txtName.setPreferredSize(this.txtName.getSize());
 
 		memberPane.add(new JScrollPane(this.listMembers), BorderLayout.SOUTH);
-		JSplitPane contentLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				this.clientPP, memberPane);
+		Container left = new Container();
+		left.setLayout(new BorderLayout());
+		left.add(clientPP, BorderLayout.NORTH);
+		left.add(memberPane, BorderLayout.SOUTH);
 
 		this.txtOutput.setEditable(false);
 		this.txtOutput.setDocument(this.doc);
@@ -118,7 +125,7 @@ public class ChatClientGUI extends JFrame implements ActionListener,
 		contentRight.setDividerLocation(0.5);
 
 		JSplitPane splitPaneContent = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, true, contentLeft, contentRight);
+				JSplitPane.HORIZONTAL_SPLIT, true, left, contentRight);
 
 		add(splitPaneContent);
 		this.txtInput.addKeyListener(this);
