@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
+import javax.swing.JOptionPane;
+
 public class CommChannel implements Runnable {
 	private static int counter;
 	private final Socket socket;
@@ -27,11 +29,10 @@ public class CommChannel implements Runnable {
 	}
 
 	public void transmit(MessageEvent e) {
-
 		try {
 			this.out.writeObject(e);
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -49,20 +50,15 @@ public class CommChannel implements Runnable {
 	public void run() {
 		this.receiver.connected(this);
 		MessageEvent msg;
-		boolean causedByOtherEnd = true;
 
 		try {
 			while (((msg = (MessageEvent) this.in.readObject())) != null) {
 				this.receiver.receiveNextMessage(msg, this);
 			}
 		} catch (ClassNotFoundException cnfexc) { // shouldn't happen
-
 			cnfexc.printStackTrace();
-		} catch (SocketException sexc) { // own socket closed
-			causedByOtherEnd = false;
-			sexc.printStackTrace();
-		} catch (EOFException eofexc) { // end of stream, connection interrupted
-			causedByOtherEnd = true;
+		} catch (SocketException sexc) { // own or remote socket closed
+		} catch (EOFException eofexc) { // end of stream, connection interrupted, why should this happen?
 			eofexc.printStackTrace();
 		}
 		catch (IOException ioexc) {
@@ -70,7 +66,7 @@ public class CommChannel implements Runnable {
 			ioexc.printStackTrace();
 		}
 
-		this.receiver.disconnected(this, causedByOtherEnd);// ///////////////////////////////////////////
+		this.receiver.disconnected(this, !this.socket.isClosed());// ///////////////////////////////////////////
 	}
 
 }

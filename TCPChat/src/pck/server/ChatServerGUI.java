@@ -19,8 +19,7 @@ public class ChatServerGUI implements Receiver {
 	private final Set<CommChannel> clients;
 
 	public ChatServerGUI() {
-		this.clients = new MultiClientServer("ChatServer", this)
-				.getClients();
+		this.clients = new MultiClientServer("ChatServer", this).getClients();
 	}
 
 	@Override
@@ -38,17 +37,15 @@ public class ChatServerGUI implements Receiver {
 
 		else if (e instanceof ReNameEvent) {
 			broadcast(e);
-			
-		}  else {
+
+		} else {
 			throw new IllegalArgumentException(e.toString());
 		}
 	}
 
-	private  void broadcast(MessageEvent msg) {
-		synchronized (this.clients) {
-			for (CommChannel client : this.clients) {
-				client.transmit(msg);
-			}
+	private void broadcast(MessageEvent msg) {
+		for (CommChannel client : this.clients) {
+			client.transmit(msg);
 		}
 	}
 
@@ -56,7 +53,7 @@ public class ChatServerGUI implements Receiver {
 	public void connected(CommChannel source) {
 		final int id = source.getId();
 		source.transmit(new TellIDEvent(id));
-		
+
 	}
 
 	@Override
