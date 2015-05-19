@@ -7,6 +7,7 @@ import general.MultiClientServer;
 import general.Receiver;
 
 import java.util.List;
+import java.util.Set;
 
 import pck.ExitEvent;
 import pck.ReNameEvent;
@@ -15,11 +16,11 @@ import pck.TextMessageEvent;
 
 public class ChatServerGUI implements Receiver {
 
-	private final List<CommChannel> clientList;
+	private final Set<CommChannel> clients;
 
 	public ChatServerGUI() {
-		this.clientList = new MultiClientServer("ChatServer", this)
-				.getClientList();
+		this.clients = new MultiClientServer("ChatServer", this)
+				.getClients();
 	}
 
 	@Override
@@ -44,8 +45,8 @@ public class ChatServerGUI implements Receiver {
 	}
 
 	private  void broadcast(MessageEvent msg) {
-		synchronized (this.clientList) {
-			for (CommChannel client : this.clientList) {
+		synchronized (this.clients) {
+			for (CommChannel client : this.clients) {
 				client.transmit(msg);
 			}
 		}

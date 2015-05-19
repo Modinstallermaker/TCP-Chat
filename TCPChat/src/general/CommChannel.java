@@ -31,7 +31,7 @@ public class CommChannel implements Runnable {
 		try {
 			this.out.writeObject(e);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			System.err.println(ex);
 		}
 	}
 
@@ -55,19 +55,19 @@ public class CommChannel implements Runnable {
 			while (((msg = (MessageEvent) this.in.readObject())) != null) {
 				this.receiver.receiveNextMessage(msg, this);
 			}
-		} catch (ClassNotFoundException e) { // shouldn't happen
+		} catch (ClassNotFoundException cnfexc) { // shouldn't happen
 
-			e.printStackTrace();
-		} catch (SocketException e) { // own socket closed
+			cnfexc.printStackTrace();
+		} catch (SocketException sexc) { // own socket closed
 			causedByOtherEnd = false;
-			e.printStackTrace();
-		} catch (EOFException e) { // end of stream, connection interrupted
+			sexc.printStackTrace();
+		} catch (EOFException eofexc) { // end of stream, connection interrupted
 			causedByOtherEnd = true;
-			e.printStackTrace();
+			eofexc.printStackTrace();
 		}
-		catch (IOException e) {
+		catch (IOException ioexc) {
 			// shouldn't happen
-			e.printStackTrace();
+			ioexc.printStackTrace();
 		}
 
 		this.receiver.disconnected(this, causedByOtherEnd);// ///////////////////////////////////////////

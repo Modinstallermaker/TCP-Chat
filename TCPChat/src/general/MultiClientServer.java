@@ -13,8 +13,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,7 +27,8 @@ import javax.swing.JTextField;
 
 import layout.TableLayout;
 
-public class MultiClientServer extends JFrame implements ActionListener, Receiver {
+public class MultiClientServer extends JFrame implements ActionListener,
+		Receiver {
 	/**
 	 * 
 	 */
@@ -37,8 +42,9 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	private final JButton btnServer = new JButton("Server Starten");
 
 	private ServerSocket ss;
-	private final List<CommChannel> clientList = new Vector<>();
-																		
+	private final Set<CommChannel> clients = Collections
+			.synchronizedSet(new CopyOnWriteArraySet<CommChannel>());
+
 	private boolean connectionActive;
 	protected final Receiver receiver;
 
@@ -117,7 +123,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 						this,
 						"Bindungsfehler beim Erstellen des Server auf Port "
 								+ port
-								+ ", dieser Port wird bereits von einem anderen Server verwendet. Versuchen Sie einen anderen Port.");
+								+ ", dieser Port wird bereits von einem anderen Server verwendet. Versuchen Sie einen anderen Port, empfohlener Bereich 45000-50000.");
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -126,8 +132,9 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 
 			}
 		} catch (IllegalArgumentException e) {
-			showMessageDialog(this,
-					"Bitte geben Sie einen g\u00fcltigen Port ein, empfohlener Bereich 45000-50000");
+			showMessageDialog(
+					this,
+					"Bitte geben Sie einen g\u00fcltigen Port ein, empfohlener Bereich 45000-50000.");
 		}
 
 	}
@@ -140,15 +147,17 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				try {
 					while (MultiClientServer.this.connectionActive) {
 						final Socket s = MultiClientServer.this.ss.accept();
-						new CommChannel(s, MultiClientServer.this);						
+						new CommChannel(s, MultiClientServer.this);
 					}
 				} catch (SocketException e) {
 					// ServerSocket wurde geschlossen
 					MultiClientServer.this.ss = null; // let gc do its work
 				} catch (IOException e) {
 					e.printStackTrace();
-					showMessageDialog(MultiClientServer.this,
-							"I/O Fehler beim Akzeptieren einer Verbindung");
+					showMessageDialog(
+							MultiClientServer.this,
+							"I/O Fehler beim Akzeptieren einer Verbindung "
+									+ e.getMessage());
 				}
 			}
 
@@ -157,23 +166,29 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 
 	@Override
 	public void connected(CommChannel source) {
-		this.clientList.add(source);
+		this.clients.add(source);
 		this.receiver.connected(source);
 		updateServerStatus();
 	}
 
 	@Override
 	public void disconnected(CommChannel source, boolean causedByClient) {
-		this.clientList.remove(source);
+		if (this.clients.remove(source)) {
+			System.out.println("Channel entfernt");
+		} else {
+			throw new RuntimeException("This shouldn't happen");
+		}
 		this.receiver.disconnected(source, causedByClient);
 		if (causedByClient) {
 			updateServerStatus();
+		}else {
+			System.out.println("Verbindung wurde angeblich vom Server unterbrochen");
 		}
 	}
 
 	private void updateServerStatus() {
 		if (this.connectionActive) {
-			final int clients = this.clientList.size();
+			final int clients = this.clients.size();
 			this.lblStatus.setText("Server Online, " + clients + " Client"
 					+ (clients != 1 ? "s angemeldet" : " angemeldet"));
 			this.btnServer.setText("Server beenden");
@@ -185,7 +200,7 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 	}
 
 	private void destroyServer() {
-		if (this.clientList.isEmpty()
+		if (this.clients.isEmpty()
 				|| 0 == showConfirmDialog(this,
 						"Sind Sie sicher, dass sie den Server beenden m\u00f6chten?"))
 			try {
@@ -201,18 +216,18 @@ public class MultiClientServer extends JFrame implements ActionListener, Receive
 				showMessageDialog(this,
 						"Fehler beim schlie\u00dfen des Servers");
 			}
+		
 	}
 
 	private void kickAll() throws IOException {
-		synchronized (this.clientList) {
-			for (CommChannel conn : this.clientList) {
-				conn.disconnect();
-			}			
+		for (CommChannel conn : this.clients) {
+			conn.disconnect();
+
 		}
 	}
 
-	public List<CommChannel> getClientList() {
-		return this.clientList;
+	public Set<CommChannel> getClients() {
+		return this.clients;
 	}
 
 	@Override
