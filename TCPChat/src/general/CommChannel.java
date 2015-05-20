@@ -22,7 +22,8 @@ public class CommChannel implements Runnable {
 		this.id = ++counter;
 		this.socket = socket;
 		this.receiver = receiver;
-		this.out = new ObjectOutputStream(socket.getOutputStream());
+//		this.out = new ObjectOutputStream(socket.getOutputStream());
+		this.out = new ObjectOutputStream(System.err);
 		this.in = new ObjectInputStream(socket.getInputStream());
 		new Thread(this, "Channel-" + this.id).start();
 
